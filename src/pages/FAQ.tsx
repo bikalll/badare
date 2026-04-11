@@ -43,7 +43,7 @@ export const FAQ = () => {
                 ) : (
                     <Accordion.Root type="single" collapsible className="space-y-6">
                         <AnimatePresence>
-                            {faqs.map((faq, index) => (
+                            {faqs.map((faq) => (
                                 <Accordion.Item 
                                     key={faq.id} 
                                     value={`item-${faq.id}`}

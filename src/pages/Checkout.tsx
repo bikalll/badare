@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useCartStore } from '../store/useCartStore';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../utils/supabaseClient';
 
 export const Checkout = () => {
     const { items, getCartTotal, clearCart } = useCartStore();
     const navigate = useNavigate();
     const [step, setStep] = useState(1); // 1: Shipping, 2: Payment, 3: Confirmation
-    const [orderDetails, setOrderDetails] = useState<any>(null);
+
     const [shippingData, setShippingData] = useState({
         email: '', firstName: '', lastName: '', address: '', contactNumber: ''
     });

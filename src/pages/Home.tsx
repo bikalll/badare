@@ -6,7 +6,7 @@ import { MagneticElement } from '../components/MagneticElement';
 import { ScrambleText } from '../components/ScrambleText';
 import { useProductStore } from '../store/useProductStore';
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+
 import { supabase } from '../utils/supabaseClient';
 
 export const Home = () => {

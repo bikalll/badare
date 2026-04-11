@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../utils/supabaseClient';
-import { Search, Package, CustomIcon, CheckCircle2, Clock, Truck } from 'lucide-react'; // Faking some icons if missing, we'll use standard lucide ones. Actually, let's use valid lucide exports.
-import { Box, Send, MapPin, CheckSquare } from 'lucide-react';
+import { Search, Clock, Truck } from 'lucide-react';
+import { Box, MapPin } from 'lucide-react';
 
 export const OrderTracking = () => {
     const [orderNumber, setOrderNumber] = useState('');
