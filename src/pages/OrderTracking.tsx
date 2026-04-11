@@ -19,6 +19,10 @@ export const OrderTracking = () => {
         setError('');
         setOrderData(null);
 
+        // Sanitize input values
+        const cleanOrder = orderNumber.trim().toUpperCase();
+        const cleanEmail = email.trim().toLowerCase();
+
         try {
             // Adding a slight delay to simulate processing for cool effect
             await new Promise(r => setTimeout(r, 800));
@@ -26,18 +30,20 @@ export const OrderTracking = () => {
             const { data, error } = await supabase
                 .from('orders')
                 .select('*')
-                .eq('orderNumber', orderNumber)
-                .single();
+                .eq('orderNumber', cleanOrder)
+                .maybeSingle();
 
             if (error) {
-                if (error.code === 'PGRST116') { // No rows returned
-                    setError('Order not found. Verify your Order ID and try again.');
-                } else {
-                    setError('An error occurred. Please try again later.');
-                }
+                setError('An error occurred. Please try again later.');
                 return;
             }
-            if (data.customerEmail !== email) {
+
+            if (!data) {
+                setError('Order not found. Verify your Order ID and try again.');
+                return;
+            }
+
+            if (data.customerEmail?.toLowerCase() !== cleanEmail) {
                 setError('Invalid order number or email combination.');
                 return;
             }

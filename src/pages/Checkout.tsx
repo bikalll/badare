@@ -72,7 +72,7 @@ export const Checkout = () => {
 
         setIsOrderPlaced(true);
         clearCart();
-        navigate('/order-confirmation/' + orderData.orderNumber);
+        navigate('/order-confirmation/' + orderData.orderNumber, { state: { orderDetails: orderData } });
         window.scrollTo(0, 0);
     };
 

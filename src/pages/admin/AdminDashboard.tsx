@@ -135,7 +135,7 @@ export const AdminDashboard = () => {
                                 <div key={i} className="flex flex-col items-center gap-3 flex-1 group z-10 w-full h-full">
                                     <div className="w-full flex justify-center relative h-full items-end">
                                         <div 
-                                            className="w-full max-w-[48px] bg-indigo-100 group-hover:bg-indigo-600 rounded-t-md transition-all duration-500 relative cursor-pointer"
+                                            className="w-full max-w-[24px] md:max-w-[48px] bg-indigo-100 group-hover:bg-indigo-600 rounded-t-md transition-all duration-500 relative cursor-pointer"
                                             style={{ height: `${(day.total / stats.maxChartVal) * 100}%`, minHeight: '4px' }}
                                         >
                                             <div className="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs py-1.5 px-3 rounded shadow-lg font-medium whitespace-nowrap transition-opacity pointer-events-none">

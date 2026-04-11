@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { Package, LayoutDashboard, ShoppingCart, Users, Power, ChevronLeft, ChevronRight, Bell, Search, User as UserIcon, HelpCircle } from 'lucide-react';
+import { Package, LayoutDashboard, ShoppingCart, Users, Power, ChevronLeft, ChevronRight, Bell, Search, User as UserIcon, HelpCircle, Menu } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '../../store/useAuthStore';
 import { AdminLogin } from './AdminLogin';
@@ -10,7 +10,7 @@ export const AdminLayout = () => {
     const location = useLocation();
     const { isAuthenticated, setAuth, logout } = useAuthStore();
     const [isInitializing, setIsInitializing] = useState(true);
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(window.innerWidth < 768);
 
     useEffect(() => {
         // Fetch session on load
@@ -45,15 +45,24 @@ export const AdminLayout = () => {
 
     return (
         <div className="min-h-screen h-screen bg-slate-50 flex overflow-hidden font-sans relative z-50">
+            {/* Mobile Overlay */}
+            {!isCollapsed && (
+                <div 
+                    onClick={() => setIsCollapsed(true)} 
+                    className="md:hidden fixed inset-0 bg-slate-900/50 z-40 backdrop-blur-sm"
+                />
+            )}
+            
             {/* Sidebar Navigation */}
             <aside 
-                className={`${isCollapsed ? 'w-20' : 'w-64'} bg-slate-900 flex-shrink-0 text-slate-300 flex flex-col h-full border-r border-slate-800 shadow-xl transition-all duration-300 relative z-20`}
+                className={`fixed md:relative top-0 left-0 h-full z-50 bg-slate-900 flex-shrink-0 text-slate-300 flex flex-col border-r border-slate-800 shadow-xl transition-all duration-300 
+                ${isCollapsed ? '-translate-x-full md:translate-x-0 md:w-20' : 'translate-x-0 w-64'}`}
             >
                 <div className={`p-6 mb-4 mt-4 flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
                     {!isCollapsed && <h2 className="text-xl font-bold tracking-wider text-white">Command</h2>}
                     <button 
                         onClick={() => setIsCollapsed(!isCollapsed)} 
-                        className="p-1 rounded-md bg-slate-800 hover:bg-slate-700 hover:text-white transition-colors"
+                        className="hidden md:flex p-1 rounded-md bg-slate-800 hover:bg-slate-700 hover:text-white transition-colors"
                     >
                         {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
                     </button>
@@ -71,7 +80,7 @@ export const AdminLayout = () => {
                                 className={`flex items-center gap-3 px-4 py-3 font-medium text-sm rounded-lg transition-colors ${isCollapsed ? 'justify-center px-0' : ''} ${isActive ? 'bg-indigo-600 text-white shadow-sm' : 'hover:bg-slate-800 hover:text-white'}`}
                             >
                                 <Icon className="w-5 h-5 shrink-0" />
-                                {!isCollapsed && <span>{link.label}</span>}
+                                {(!isCollapsed || window.innerWidth < 768) && <span>{link.label}</span>}
                             </Link>
                         );
                     })}
@@ -84,7 +93,7 @@ export const AdminLayout = () => {
                         className={`w-full flex items-center gap-2 px-4 py-3 font-medium text-sm bg-slate-800 text-slate-300 rounded-lg hover:bg-red-600 hover:text-white transition-colors ${isCollapsed ? 'justify-center px-0' : 'justify-center'}`}
                     >
                         <Power className="w-4 h-4 shrink-0" />
-                        {!isCollapsed && <span>Sign Out</span>}
+                        {(!isCollapsed || window.innerWidth < 768) && <span>Sign Out</span>}
                     </button>
                 </div>
             </aside>
@@ -92,7 +101,13 @@ export const AdminLayout = () => {
             {/* Main Interface */}
             <div className="flex flex-col flex-1 h-full overflow-hidden w-full relative z-10">
                 {/* Header Bar */}
-                <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 md:px-10 shrink-0 shadow-sm z-20">
+                <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:px-10 shrink-0 shadow-sm z-20 gap-4">
+                    <button 
+                        onClick={() => setIsCollapsed(!isCollapsed)} 
+                        className="md:hidden p-2 -ml-2 text-slate-500 hover:text-indigo-600 rounded-md"
+                    >
+                        <Menu className="w-6 h-6" />
+                    </button>
                     {/* Search Component */}
                     <div className="relative w-full max-w-md hidden md:block">
                         <input 

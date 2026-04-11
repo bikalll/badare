@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { supabase } from '../utils/supabaseClient';
 
 export const OrderConfirmation = () => {
     const { orderNumber } = useParams<{ orderNumber: string }>();
-    const [orderDetails, setOrderDetails] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
+    const location = useLocation();
+    const [orderDetails, setOrderDetails] = useState<any>(location.state?.orderDetails || null);
+    const [loading, setLoading] = useState(!location.state?.orderDetails);
     const [error, setError] = useState('');
 
     useEffect(() => {
         const fetchOrder = async () => {
-            if (!orderNumber) return;
+            if (!orderNumber || orderDetails) return;
             
             try {
                 const { data, error } = await supabase
@@ -30,9 +31,11 @@ export const OrderConfirmation = () => {
             }
         };
 
-        fetchOrder();
+        if (!orderDetails) {
+            fetchOrder();
+        }
         window.scrollTo(0, 0);
-    }, [orderNumber]);
+    }, [orderNumber, orderDetails]);
 
     if (loading) {
         return (
