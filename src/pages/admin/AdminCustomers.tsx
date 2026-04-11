@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../utils/supabaseClient';
 import { Trash2, Mail, Users } from 'lucide-react';
-import { motion } from 'framer-motion';
+
 
 export const AdminCustomers = () => {
     const [subscribers, setSubscribers] = useState<any[]>([]);

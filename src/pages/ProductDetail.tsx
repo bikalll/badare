@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Minus, Plus, ArrowLeft, Heart, Share2, Ruler } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Minus, Plus, ArrowLeft, Heart, Share2 } from 'lucide-react';
 import { useProductStore } from '../store/useProductStore';
 import { useCartStore } from '../store/useCartStore';
 

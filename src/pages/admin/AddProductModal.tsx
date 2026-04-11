@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
-import { X, Upload, Check } from 'lucide-react';
+import { X, Upload } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useProductStore } from '../../store/useProductStore';
 

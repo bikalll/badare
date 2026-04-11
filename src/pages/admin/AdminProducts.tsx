@@ -18,7 +18,7 @@ export const AdminProducts = () => {
         return <span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded text-xs font-semibold">In Stock ({s})</span>;
     };
 
-    const handleDelete = async (id: string, imagePath: string) => {
+    const handleDelete = async (id: string) => {
         if (!window.confirm('Delete this product permanently?')) return;
         
         const { error } = await supabase.from('products').delete().eq('id', id);
@@ -86,7 +86,7 @@ export const AdminProducts = () => {
                                     <tr key={p.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
                                         <td className="py-4 pl-6 pr-4">
                                             <div className="w-12 h-12 rounded-md overflow-hidden border border-slate-200 bg-white shadow-sm">
-                                                <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
+                                                <img src={p.images?.[0]} alt={p.name} className="w-full h-full object-cover" />
                                             </div>
                                         </td>
                                         <td className="py-4 px-4 font-medium text-slate-900">{p.name}</td>
@@ -104,7 +104,7 @@ export const AdminProducts = () => {
                                                     Edit
                                                 </button>
                                                 <button 
-                                                    onClick={() => handleDelete(p.id, p.image)}
+                                                    onClick={() => handleDelete(p.id)}
                                                     className="text-rose-600 hover:text-rose-900 font-medium text-sm transition-colors"
                                                 >
                                                     Delete
@@ -127,7 +127,7 @@ export const AdminProducts = () => {
                         products.map((p) => (
                             <div key={p.id} className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col group hover:shadow-md transition-shadow">
                                 <div className="h-48 w-full bg-slate-100 relative overflow-hidden">
-                                    <img src={p.image} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                    <img src={p.images?.[0]} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                     <div className="absolute top-3 right-3">
                                         {getStockBadge(p.stock)}
                                     </div>
@@ -145,7 +145,7 @@ export const AdminProducts = () => {
                                             Edit
                                         </button>
                                         <button 
-                                            onClick={() => handleDelete(p.id, p.image)}
+                                            onClick={() => handleDelete(p.id)}
                                             className="flex-1 py-1.5 text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-md transition-colors"
                                         >
                                             Delete

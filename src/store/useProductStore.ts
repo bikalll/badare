@@ -23,7 +23,7 @@ interface ProductState {
     products: Product[];
     loading: boolean;
     error: string | null;
-    fetchProducts: () => Promise<void>;
+    fetchProducts: (forceRefetch?: boolean) => Promise<void>;
     addProduct: (productPayload: Omit<Product, 'id'>, imageFiles?: File[]) => Promise<boolean>;
     updateProduct: (id: string, productPayload: Partial<Product>, imageFiles?: File[]) => Promise<boolean>;
 }
