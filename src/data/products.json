@@ -1,0 +1,184 @@
+[
+    {
+        "id": "prod_1",
+        "name": "Brutalist Oversized Hoodie",
+        "price": 120,
+        "description": "Heavyweight cotton hoodie with raw hems. Minimalist structure meets supreme comfort. Designed to age with character.",
+        "category": "Apparel",
+        "images": [
+            "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1572495641004-28421ae52e52?auto=format&fit=crop&q=80&w=800"
+        ],
+        "variants": {
+            "sizes": [
+                "S",
+                "M",
+                "L",
+                "XL"
+            ],
+            "colors": [
+                "#0A0A0A",
+                "#E8E8E8",
+                "#F5E642"
+            ]
+        },
+        "isNew": true,
+        "isTrending": true
+    },
+    {
+        "id": "prod_2",
+        "name": "Structure Work Pants",
+        "price": 145,
+        "description": "Durable canvas work pants with reinforced knees and wide leg opening. Built for movement.",
+        "category": "Apparel",
+        "images": [
+            "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1542272454315-4c01d7abdf4a?auto=format&fit=crop&q=80&w=800"
+        ],
+        "variants": {
+            "sizes": [
+                "28",
+                "30",
+                "32",
+                "34",
+                "36"
+            ],
+            "colors": [
+                "#0A0A0A",
+                "#5A5A5A"
+            ]
+        },
+        "isTrending": true
+    },
+    {
+        "id": "prod_3",
+        "name": "Atelier Tote Bag",
+        "price": 85,
+        "description": "Heavy-duty canvas structured tote. Roomy enough for a 15-inch laptop and daily essentials.",
+        "category": "Accessories",
+        "images": [
+            "https://images.unsplash.com/photo-1591561954557-26941169b49e?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1598532163257-ae3c6b2524b6?auto=format&fit=crop&q=80&w=800"
+        ],
+        "variants": {
+            "sizes": [
+                "One Size"
+            ],
+            "colors": [
+                "#E8E8E8",
+                "#0A0A0A"
+            ]
+        },
+        "isNew": true
+    },
+    {
+        "id": "prod_4",
+        "name": "Essential Box Tee",
+        "price": 55,
+        "description": "The perfect drop-shoulder boxy tee. Crafted from 240gsm organic cotton.",
+        "category": "Apparel",
+        "images": [
+            "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&q=80&w=800"
+        ],
+        "variants": {
+            "sizes": [
+                "S",
+                "M",
+                "L",
+                "XL"
+            ],
+            "colors": [
+                "#FFFFFF",
+                "#0A0A0A"
+            ]
+        }
+    },
+    {
+        "id": "prod_5",
+        "name": "Statement Beanie",
+        "price": 35,
+        "description": "Chunky knit beanie featuring a subtle utility tag. Woven from a warm wool blend.",
+        "category": "Accessories",
+        "images": [
+            "https://images.unsplash.com/photo-1576871337622-98d48d1cf531?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1521369909029-2afed882baee?auto=format&fit=crop&q=80&w=800"
+        ],
+        "variants": {
+            "sizes": [
+                "One Size"
+            ],
+            "colors": [
+                "#F5E642",
+                "#0A0A0A"
+            ]
+        },
+        "isTrending": true
+    },
+    {
+        "id": "prod_6",
+        "name": "Technical Vest",
+        "price": 175,
+        "description": "Multi-pocket tactical vest updated with minimal hardware. Unlined, perfect for layering.",
+        "category": "Outerwear",
+        "images": [
+            "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1620153835661-0428d0554160?auto=format&fit=crop&q=80&w=800"
+        ],
+        "variants": {
+            "sizes": [
+                "S",
+                "M",
+                "L",
+                "XL"
+            ],
+            "colors": [
+                "#0A0A0A"
+            ]
+        }
+    },
+    {
+        "id": "prod_7",
+        "name": "Canvas High-Tops",
+        "price": 140,
+        "description": "Platform canvas sneakers with rubberized toe caps. Chunky silhouette, lightweight feel.",
+        "category": "Footwear",
+        "images": [
+            "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1605348532760-6753d2c43329?auto=format&fit=crop&q=80&w=800"
+        ],
+        "variants": {
+            "sizes": [
+                "US 7",
+                "US 8",
+                "US 9",
+                "US 10",
+                "US 11"
+            ],
+            "colors": [
+                "#E8E8E8",
+                "#0A0A0A"
+            ]
+        },
+        "isTrending": true
+    },
+    {
+        "id": "prod_8",
+        "name": "Minimalist Cardholder",
+        "price": 45,
+        "description": "Vegetable-tanned leather slim wallet. Holds 4 cards and folded bills.",
+        "category": "Accessories",
+        "images": [
+            "https://images.unsplash.com/photo-1606503825008-9dfcb0e653ea?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&q=80&w=800"
+        ],
+        "variants": {
+            "sizes": [
+                "One Size"
+            ],
+            "colors": [
+                "#0A0A0A"
+            ]
+        }
+    }
+]

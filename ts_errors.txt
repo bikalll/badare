@@ -1,0 +1,5 @@
+src/components/MonkeyMascot.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/components/ProductCard.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/components/QuickViewModal.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/pages/Cart.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/pages/Shop.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
