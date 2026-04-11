@@ -52,13 +52,13 @@ export const Shop = () => {
             className="pb-24 pt-12"
         >
             <div className="max-w-[90rem] mx-auto px-6">
-                <header className="mb-12 mt-8 md:mb-20">
+                <header className="mb-12 mt-4 md:mt-8 md:mb-20">
                     <div>
-                        <h1 className="font-display text-6xl md:text-8xl lg:text-[9rem] leading-[0.8] uppercase tracking-tighter mb-6 text-white bg-black inline-block p-4 brutalist-border shadow-[8px_8px_0_0_#000]">
+                        <h1 className="font-display text-4xl sm:text-6xl md:text-8xl lg:text-[9rem] leading-[0.8] uppercase tracking-tighter mb-4 md:mb-6 text-white bg-black inline-block p-2 md:p-4 brutalist-border shadow-[4px_4px_0_0_#000] md:shadow-[8px_8px_0_0_#000]">
                             {activeCategory === 'All' ? 'Collection' : activeCategory}
                         </h1>
                         <br />
-                        <p className="text-black bg-white inline-block px-4 py-3 text-lg font-black uppercase tracking-widest brutalist-border mt-2 shadow-[4px_4px_0_0_#000]">
+                        <p className="text-black bg-white inline-block px-3 md:px-4 py-2 md:py-3 text-sm md:text-lg font-black uppercase tracking-wide md:tracking-widest brutalist-border mt-2 shadow-[2px_2px_0_0_#000] md:shadow-[4px_4px_0_0_#000]">
                             EXPLORE THE LATEST FROM BADARE. FUNCTIONAL DESIGN MEETS EXTREME AESTHETIC RESTRAINT.
                         </p>
                     </div>
