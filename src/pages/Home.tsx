@@ -94,7 +94,7 @@ export const Home = () => {
                 {loading ? (
                     <div className="col-span-full py-12 text-center font-display text-4xl uppercase animate-pulse">Loading Comm Link...</div>
                 ) : (
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 gap-y-12">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 gap-y-12">
                         {newArrivals.slice(0, 4).map(product => (
                             <ProductCard key={product.id} product={product as any} hidePrice={true} />
                         ))}
