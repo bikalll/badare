@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../utils/supabaseClient';
 import { motion } from 'framer-motion';
-import { Plus, Trash2, Edit2, Check, X, Image as ImageIcon } from 'lucide-react';
+import { Plus, Trash2, Edit2, Check, X, Image as ImageIcon, Upload } from 'lucide-react';
+import { uploadToCloudinary } from '../../utils/cloudinary';
 
 interface HeroSlide {
     id: string;
@@ -17,6 +18,9 @@ export const AdminHero = () => {
     const [loading, setLoading] = useState(true);
     const [editingSlide, setEditingSlide] = useState<Partial<HeroSlide> | null>(null);
     const [isSaving, setIsSaving] = useState(false);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         fetchSlides();
@@ -47,18 +51,41 @@ export const AdminHero = () => {
         }
     };
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            setSelectedFile(file);
+            const reader = new FileReader();
+            reader.onloadend = () => setPreviewUrl(reader.result as string);
+            reader.readAsDataURL(file);
+        }
+    };
+
     const handleSave = async () => {
-        if (!editingSlide?.title || !editingSlide?.image_url) {
-            alert("Title and Image URL are required");
+        if (!editingSlide?.title || (!editingSlide?.image_url && !selectedFile)) {
+            alert("Title and Image are required");
             return;
         }
 
         setIsSaving(true);
+        let finalImageUrl = editingSlide.image_url || '';
+
+        // If a new file is selected, upload to Cloudinary directly!
+        if (selectedFile) {
+            try {
+                finalImageUrl = await uploadToCloudinary(selectedFile);
+            } catch (err: any) {
+                alert(`Upload failed: ${err.message}`);
+                setIsSaving(false);
+                return;
+            }
+        }
+
         const slideData = {
             title: editingSlide.title,
             italic_text: editingSlide.italic_text || '',
             description: editingSlide.description || '',
-            image_url: editingSlide.image_url,
+            image_url: finalImageUrl,
             sort_order: editingSlide.sort_order || 0
         };
 
@@ -72,6 +99,8 @@ export const AdminHero = () => {
 
         setIsSaving(false);
         setEditingSlide(null);
+        setSelectedFile(null);
+        setPreviewUrl(null);
         fetchSlides();
     };
 
@@ -83,7 +112,11 @@ export const AdminHero = () => {
                     <p className="text-slate-500 font-medium text-sm mt-1">Manage the cinematic homepage carousel</p>
                 </div>
                 <button
-                    onClick={() => setEditingSlide({ title: '', italic_text: '', description: '', image_url: '', sort_order: slides.length })}
+                    onClick={() => {
+                        setEditingSlide({ title: '', italic_text: '', description: '', image_url: '', sort_order: slides.length });
+                        setSelectedFile(null);
+                        setPreviewUrl(null);
+                    }}
                     className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition"
                 >
                     <Plus size={18} />
@@ -100,7 +133,11 @@ export const AdminHero = () => {
                             <div className="h-48 bg-slate-100 relative group">
                                 <img src={slide.image_url} alt={slide.title} className="w-full h-full object-cover" />
                                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
-                                    <button onClick={() => setEditingSlide(slide)} className="bg-white text-slate-900 p-2 rounded-full hover:bg-indigo-50 transition">
+                                    <button onClick={() => {
+                                        setEditingSlide(slide);
+                                        setSelectedFile(null);
+                                        setPreviewUrl(slide.image_url);
+                                    }} className="bg-white text-slate-900 p-2 rounded-full hover:bg-indigo-50 transition">
                                         <Edit2 size={16} />
                                     </button>
                                     <button onClick={() => handleDelete(slide.id)} className="bg-white text-red-600 p-2 rounded-full hover:bg-red-50 transition">
@@ -171,12 +208,49 @@ export const AdminHero = () => {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Image URL (Unsplash recommended)</label>
+                                <label className="block text-sm font-semibold text-slate-700 mb-2 uppercase tracking-wide">Hero Image</label>
+                                <div 
+                                    className="border-2 border-dashed border-slate-300 rounded-xl p-4 text-center cursor-pointer hover:bg-slate-50 transition-colors relative mb-3"
+                                    onClick={() => fileInputRef.current?.click()}
+                                >
+                                    {previewUrl ? (
+                                        <div className="relative h-32 w-full mx-auto overflow-hidden rounded-lg shadow-sm">
+                                            <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
+                                            <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                <span className="text-white text-xs font-semibold uppercase tracking-wider flex items-center gap-2">
+                                                    <Upload size={14} /> Replace
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="py-4">
+                                            <Upload className="mx-auto h-8 w-8 text-indigo-400 mb-2" />
+                                            <p className="text-sm font-medium text-slate-700">Click to upload from device</p>
+                                            <p className="text-xs text-slate-400 mt-1">Saves directly to Cloudinary</p>
+                                        </div>
+                                    )}
+                                    <input 
+                                        type="file" 
+                                        ref={fileInputRef} 
+                                        onChange={handleFileChange} 
+                                        accept="image/*" 
+                                        className="hidden" 
+                                    />
+                                </div>
+                                
+                                <div className="flex items-center gap-2 mb-3">
+                                    <span className="h-px bg-slate-200 flex-1"></span>
+                                    <span className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Or use URL</span>
+                                    <span className="h-px bg-slate-200 flex-1"></span>
+                                </div>
+
                                 <input 
                                     type="url" 
-                                    className="w-full border border-slate-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
+                                    className="w-full border border-slate-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none text-sm disabled:opacity-50 disabled:bg-slate-50"
                                     value={editingSlide.image_url || ''}
                                     onChange={e => setEditingSlide({...editingSlide, image_url: e.target.value})}
+                                    placeholder="https://images.unsplash.com/..."
+                                    disabled={!!selectedFile}
                                 />
                             </div>
                             <div>

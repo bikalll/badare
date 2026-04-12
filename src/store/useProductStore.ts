@@ -2,7 +2,12 @@ import { create } from 'zustand';
 import { supabase } from '../utils/supabaseClient';
 import { uploadToCloudinary } from '../utils/cloudinary';
 
-interface Product {
+export interface ProductColor {
+    hex: string;
+    images: string[];
+}
+
+export interface Product {
     id: string;
     name: string;
     price: number;
@@ -11,7 +16,7 @@ interface Product {
     images: string[];
     variants: {
         sizes: string[];
-        colors: string[];
+        colors: (string | ProductColor)[];
     };
     isNew: boolean;
     isTrending: boolean;
@@ -19,13 +24,15 @@ interface Product {
     stock: number;
 }
 
+export type ColorImageMap = { [hex: string]: File[] };
+
 interface ProductState {
     products: Product[];
     loading: boolean;
     error: string | null;
     fetchProducts: (forceRefetch?: boolean) => Promise<void>;
-    addProduct: (productPayload: Omit<Product, 'id'>, imageFiles?: File[]) => Promise<boolean>;
-    updateProduct: (id: string, productPayload: Partial<Product>, imageFiles?: File[]) => Promise<boolean>;
+    addProduct: (productPayload: Omit<Product, 'id'>, imageFiles?: File[], colorImageMap?: ColorImageMap) => Promise<boolean>;
+    updateProduct: (id: string, productPayload: Partial<Product>, imageFiles?: File[], colorImageMap?: ColorImageMap) => Promise<boolean>;
 }
 
 export const useProductStore = create<ProductState>((set, get) => ({
@@ -49,7 +56,7 @@ export const useProductStore = create<ProductState>((set, get) => ({
         }
     },
 
-    addProduct: async (productPayload, imageFiles) => {
+    addProduct: async (productPayload, imageFiles, colorImageMap) => {
         set({ loading: true, error: null });
         
         let finalImages = [...productPayload.images];
@@ -71,6 +78,30 @@ export const useProductStore = create<ProductState>((set, get) => ({
             images: finalImages
         };
 
+        // Handle color-specific images
+        if (colorImageMap) {
+            for (const hex of Object.keys(colorImageMap)) {
+                const uploadedUrls: string[] = [];
+                for (const file of colorImageMap[hex]) {
+                    try {
+                        const secureUrl = await uploadToCloudinary(file);
+                        uploadedUrls.push(secureUrl);
+                    } catch (uploadError: any) {
+                        set({ error: uploadError.message || 'Color image upload failed', loading: false });
+                        return false;
+                    }
+                }
+                
+                // Assign uploaded URLs to the specific color object
+                payloadToInsert.variants.colors = payloadToInsert.variants.colors.map(color => {
+                    if (typeof color === 'object' && color.hex === hex) {
+                        return { ...color, images: [...(color.images || []), ...uploadedUrls] };
+                    }
+                    return color;
+                });
+            }
+        }
+
         // Insert row to DB
         const { error } = await supabase
             .from('products')
@@ -86,14 +117,14 @@ export const useProductStore = create<ProductState>((set, get) => ({
         return true;
     },
 
-    updateProduct: async (id, productPayload, imageFiles) => {
+    updateProduct: async (id, productPayload, imageFiles, colorImageMap) => {
         set({ loading: true, error: null });
         
         const currentProduct = get().products.find(p => p.id === id);
         let finalImages = currentProduct?.images || [];
 
         if (imageFiles && imageFiles.length > 0) {
-            finalImages = []; // Assuming we replace existing images or we can append. Let's replace for simplicity if they upload new ones.
+            finalImages = []; // Assuming we replace existing images
             for (const file of imageFiles) {
                 try {
                     const secureUrl = await uploadToCloudinary(file);
@@ -112,6 +143,36 @@ export const useProductStore = create<ProductState>((set, get) => ({
             ...productPayload,
             images: finalImages
         };
+
+        // Handle color-specific images
+        if (colorImageMap) {
+            for (const hex of Object.keys(colorImageMap)) {
+                const uploadedUrls: string[] = [];
+                for (const file of colorImageMap[hex]) {
+                    try {
+                        const secureUrl = await uploadToCloudinary(file);
+                        uploadedUrls.push(secureUrl);
+                    } catch (uploadError: any) {
+                        set({ error: uploadError.message || 'Color image upload failed', loading: false });
+                        return false;
+                    }
+                }
+                
+                // Assign new uploaded URLs to the specific color object. 
+                // We overwrite for simplicity as they represent the new state from the editor
+                if (payloadToUpdate.variants?.colors) {
+                    payloadToUpdate.variants.colors = payloadToUpdate.variants.colors.map(color => {
+                        if (typeof color === 'object' && color.hex === hex) {
+                            // If they just added new ones, we append to existing if applicable? Or replace?
+                            // Let's replace the images with whatever we uploaded + what was kept (handled in UI)
+                            // The UI will pass existing URLs inside the color object. We just append the newly uploaded ones.
+                            return { ...color, images: [...(color.images || []), ...uploadedUrls] };
+                        }
+                        return color;
+                    });
+                }
+            }
+        }
 
         const { error } = await supabase.from('products').update(payloadToUpdate).eq('id', id);
 
