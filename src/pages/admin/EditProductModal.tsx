@@ -286,6 +286,7 @@ export const EditProductModal = ({ isOpen, onClose, product }: EditProductModalP
                                             </>
                                         )}
                                     </div>
+                                    </div>
 
                                     <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100">
                                         <Dialog.Close asChild>
