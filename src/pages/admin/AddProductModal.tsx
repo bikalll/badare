@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
-import { X, Upload } from 'lucide-react';
+import { X, Upload, Plus, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useProductStore } from '../../store/useProductStore';
 
@@ -19,13 +19,27 @@ export const AddProductModal = ({ isOpen, onClose }: AddProductModalProps) => {
     const [editorNotes, setEditorNotes] = useState('');
     const [stock, setStock] = useState('0');
     const [sizes, setSizes] = useState('');
-    const [colors, setColors] = useState('');
+    
+    interface ColorInput { id: string; hex: string; files: File[] }
+    const [colorInputs, setColorInputs] = useState<ColorInput[]>([{ id: 'c1', hex: '#000000', files: [] }]);
+    
     const [imageFiles, setImageFiles] = useState<File[]>([]);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
+        const colorImageMap: { [hex: string]: File[] } = {};
+        const productColors: { hex: string, images: string[] }[] = [];
+
+        colorInputs.forEach(input => {
+            const hex = input.hex.trim();
+            if (hex) {
+                if (input.files.length > 0) colorImageMap[hex] = input.files;
+                productColors.push({ hex, images: [] });
+            }
+        });
+
         const success = await addProduct({
             name,
             price: parseFloat(price) || 0,
@@ -34,13 +48,13 @@ export const AddProductModal = ({ isOpen, onClose }: AddProductModalProps) => {
             images: [],
             variants: { 
                 sizes: sizes.split(',').map(s => s.trim()).filter(Boolean), 
-                colors: colors.split(',').map(c => c.trim()).filter(Boolean) 
+                colors: productColors 
             },
             editorNotes,
             stock: parseInt(stock) || 0,
             isNew: true,
             isTrending: false
-        }, imageFiles);
+        }, imageFiles, colorImageMap);
 
         if (success) {
             // Reset state upon successful close
@@ -51,9 +65,16 @@ export const AddProductModal = ({ isOpen, onClose }: AddProductModalProps) => {
             setStock('0');
             setCategory('Apparel');
             setSizes('');
-            setColors('');
+            setColorInputs([{ id: 'c1', hex: '#000000', files: [] }]);
             setImageFiles([]);
             onClose();
+        }
+    };
+
+    const handleColorFileChange = (id: string, e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+             const filesArray = Array.from(e.target.files);
+             setColorInputs(prev => prev.map(c => c.id === id ? { ...c, files: [...c.files, ...filesArray] } : c));
         }
     };
 
@@ -140,18 +161,66 @@ export const AddProductModal = ({ isOpen, onClose }: AddProductModalProps) => {
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                        <div className="flex flex-col gap-1.5">
+                                        <div className="flex flex-col gap-1.5 md:col-span-2">
                                             <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Sizes (Comma Separated)</label>
                                             <input value={sizes} onChange={e => setSizes(e.target.value)} type="text" placeholder="S, M, L, XL" className="w-full border border-slate-300 rounded-lg p-2.5 text-sm font-medium text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all shadow-sm" />
                                         </div>
-                                        
-                                        <div className="flex flex-col gap-1.5">
-                                            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Colors (Comma Separated)</label>
-                                            <input value={colors} onChange={e => setColors(e.target.value)} type="text" placeholder="Black, White, Red" className="w-full border border-slate-300 rounded-lg p-2.5 text-sm font-medium text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all shadow-sm" />
+                                    </div>
+
+                                    <div className="flex flex-col gap-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                                        <div className="flex items-center justify-between">
+                                            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Color Variations</label>
+                                            <button type="button" onClick={() => setColorInputs(prev => [...prev, { id: Math.random().toString(), hex: '#000000', files: [] }])} className="text-xs flex items-center gap-1 font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50 px-2 py-1 rounded-md transition-colors">
+                                                <Plus size={14} /> Add Color
+                                            </button>
+                                        </div>
+                                        <div className="flex flex-col gap-3">
+                                            {colorInputs.map((colorInput, index) => (
+                                                <div key={colorInput.id} className="flex flex-col sm:flex-row gap-3 items-start sm:items-center bg-white p-3 rounded-lg border border-slate-200 shadow-sm relative group">
+                                                    
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="flex flex-col gap-1 text-center items-center justify-center">
+                                                            <div className="w-10 h-10 rounded-full border-2 border-slate-200 overflow-hidden shadow-inner flex-shrink-0 relative cursor-pointer group/color">
+                                                                <input 
+                                                                    type="color" 
+                                                                    value={colorInput.hex} 
+                                                                    onChange={e => setColorInputs(prev => prev.map(c => c.id === colorInput.id ? { ...c, hex: e.target.value } : c))}
+                                                                    className="absolute pl-[10px] pr-[10px] -inset-6 w-24 h-24 cursor-pointer opacity-0"
+                                                                />
+                                                                <div className="absolute inset-0 z-0 pointer-events-none" style={{ backgroundColor: colorInput.hex }}></div>
+                                                            </div>
+                                                            <div className="text-[10px] font-mono text-slate-500 uppercase">{colorInput.hex}</div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex-1 w-full border-l border-slate-100 pl-3">
+                                                        <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-2 block">Upload Swatch/Color Images</label>
+                                                        <div className="flex flex-wrap gap-2 items-center">
+                                                            {colorInput.files.map((f, i) => (
+                                                                <div key={i} className="relative w-12 h-12 rounded border border-slate-200 overflow-hidden shadow-sm">
+                                                                    <img src={URL.createObjectURL(f)} alt="pic" className="w-full h-full object-cover" />
+                                                                </div>
+                                                            ))}
+                                                            
+                                                            <label className="w-12 h-12 rounded border border-dashed border-slate-300 flex items-center justify-center text-slate-400 hover:text-indigo-500 hover:border-indigo-400 hover:bg-slate-50 cursor-pointer transition-colors">
+                                                                <Plus size={18} />
+                                                                <input type="file" multiple accept="image/*" className="hidden" onChange={e => handleColorFileChange(colorInput.id, e)} />
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    {colorInputs.length > 1 && (
+                                                        <button type="button" onClick={() => setColorInputs(prev => prev.filter(c => c.id !== colorInput.id))} className="text-slate-400 hover:text-red-500 transition-colors p-2 absolute right-1 top-1 sm:relative sm:right-auto sm:top-auto opacity-0 group-hover:opacity-100 focus:opacity-100">
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
 
-                                    <div 
+                                    <div className="mt-2">
+                                        <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-2">General Product Visuals (Fallback)</label>
                                         className="border-2 border-slate-300 border-dashed rounded-lg p-8 flex flex-col items-center justify-center bg-slate-50 group hover:bg-indigo-50 hover:border-indigo-300 transition-colors cursor-pointer mt-2"
                                         onClick={() => fileInputRef.current?.click()}
                                     >

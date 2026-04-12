@@ -23,11 +23,16 @@ export const ProductDetail = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         if (product) {
             setSelectedSize(product.variants.sizes[0]);
-            setSelectedColor(product.variants.colors[0]);
+            const firstColor = product.variants.colors[0];
+            setSelectedColor(typeof firstColor === 'string' ? firstColor : (firstColor?.hex || ''));
         } else {
             navigate('/shop');
         }
     }, [product, navigate]);
+
+    useEffect(() => {
+        setActiveImage(0); // Reset image index on color change
+    }, [selectedColor, product]);
 
     if (!product) return null;
 
@@ -36,7 +41,7 @@ export const ProductDetail = () => {
             productId: product.id,
             name: product.name,
             price: product.price,
-            image: product.images[0],
+            image: displayImages[0] || product.images[0],
             quantity,
             variant: {
                 size: selectedSize,
@@ -47,6 +52,16 @@ export const ProductDetail = () => {
         setIsAdded(true);
         setTimeout(() => setIsAdded(false), 2000);
     };
+
+    const normalizedColors = product.variants.colors.map(c => {
+        if (typeof c === 'string') return { hex: c, images: [] };
+        return { hex: c.hex, images: c.images || [] };
+    });
+
+    const currentColorObj = normalizedColors.find(c => c.hex === selectedColor);
+    const displayImages = currentColorObj && currentColorObj.images.length > 0 
+        ? currentColorObj.images 
+        : product.images;
 
     return (
         <motion.div
@@ -76,7 +91,7 @@ export const ProductDetail = () => {
                     {/* Main Image */}
                     <div className="w-full bg-slate-50 relative aspect-[4/5] overflow-hidden group">
                         <img
-                            src={product.images[activeImage]}
+                            src={displayImages[activeImage] || ''}
                             alt={product.name}
                             className="w-full h-full object-cover object-center transition-transform duration-700 ease-in-out group-hover:scale-105"
                         />
@@ -84,7 +99,7 @@ export const ProductDetail = () => {
                     
                     {/* Thumbnails */}
                     <div className="flex md:flex-col gap-4 overflow-x-auto md:overflow-visible pb-2 md:pb-0 hide-scrollbar md:w-24 shrink-0">
-                        {product.images.map((img, idx) => (
+                        {displayImages.map((img, idx) => (
                             <button
                                 key={idx}
                                 onClick={() => setActiveImage(idx)}
@@ -130,19 +145,20 @@ export const ProductDetail = () => {
                             <span className="text-sm text-gray-500 capitalize">{selectedColor}</span>
                         </div>
                         <div className="flex flex-wrap gap-3">
-                            {product.variants.colors.map((color: string) => (
+                            {normalizedColors.map((colorObj) => (
                                 <button
-                                    key={color}
-                                    onClick={() => setSelectedColor(color)}
+                                    key={colorObj.hex}
+                                    onClick={() => setSelectedColor(colorObj.hex)}
                                     className={`w-10 h-10 rounded-full transition-all flex items-center justify-center ${
-                                        selectedColor === color 
+                                        selectedColor === colorObj.hex 
                                         ? 'ring-2 ring-black ring-offset-2' 
                                         : 'ring-1 ring-gray-200 hover:ring-gray-400'
                                     }`}
+                                    title={colorObj.hex}
                                 >
                                     <span 
                                         className="w-8 h-8 rounded-full shadow-inner" 
-                                        style={{ backgroundColor: color }}
+                                        style={{ backgroundColor: colorObj.hex }}
                                     />
                                 </button>
                             ))}

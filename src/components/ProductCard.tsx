@@ -12,6 +12,11 @@ export const ProductCard = ({ product, hidePrice }: ProductCardProps) => {
     const [isHovered, setIsHovered] = useState(false);
     const { openQuickView } = useCartStore();
 
+    const firstColor = product.variants?.colors?.[0];
+    const displayImages = (firstColor && typeof firstColor === 'object' && firstColor.images && firstColor.images.length > 0) 
+        ? firstColor.images 
+        : (product.images || []);
+
     return (
         <div
             className="group flex flex-col gap-4 relative cursor-pointer"
@@ -21,13 +26,13 @@ export const ProductCard = ({ product, hidePrice }: ProductCardProps) => {
             <div className="relative aspect-[3/4] overflow-hidden bg-gray-100/50 mb-1">
                 <Link to={`/product/${product.id}`} className="absolute inset-0 block overflow-hidden">
                     <img
-                        src={product.images[0]}
+                        src={displayImages[0]}
                         alt={product.name}
-                        className={`absolute inset-0 w-full h-full object-cover transition-all duration-[1.2s] ease-[0.25,0.46,0.45,0.94] group-hover:scale-105 ${isHovered && product.images[1] ? 'opacity-0 scale-110' : 'opacity-100'}`}
+                        className={`absolute inset-0 w-full h-full object-cover transition-all duration-[1.2s] ease-[0.25,0.46,0.45,0.94] group-hover:scale-105 ${isHovered && displayImages[1] ? 'opacity-0 scale-110' : 'opacity-100'}`}
                     />
-                    {product.images[1] && (
+                    {displayImages[1] && (
                         <img
-                            src={product.images[1]}
+                            src={displayImages[1]}
                             alt={`${product.name} alternate`}
                             className={`absolute inset-0 w-full h-full object-cover transition-all duration-[1.2s] ease-[0.25,0.46,0.45,0.94] group-hover:scale-105 scale-95 ${isHovered ? 'opacity-100 scale-105' : 'opacity-0'}`}
                         />
