@@ -1,4 +1,4 @@
-import { X, Trash2, Plus, Minus } from 'lucide-react';
+import { X, Plus, Minus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCartStore } from '../store/useCartStore';
 

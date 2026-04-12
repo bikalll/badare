@@ -125,9 +125,7 @@ export const Home = () => {
         upgradeImages();
     }, [products]);
     
-    // Parallax effect for the hero image
     const y1 = useTransform(scrollY, [0, 1000], [0, 300]);
-    const opacityHero = useTransform(scrollY, [0, 600], [1, 0.2]);
 
     const [newsletterEmail, setNewsletterEmail] = useState('');
     const [newsletterStatus, setNewsletterStatus] = useState<'idle' | 'submitting' | 'success'>('idle');

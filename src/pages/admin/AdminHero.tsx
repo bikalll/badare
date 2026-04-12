@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '../../utils/supabaseClient';
 import { motion } from 'framer-motion';
 import { Plus, Trash2, Edit2, Check, X, Image as ImageIcon } from 'lucide-react';

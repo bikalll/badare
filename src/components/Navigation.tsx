@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingCart, Search, Menu, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { useCartStore } from '../store/useCartStore';
 import { SearchModal } from './SearchModal';
 import { clsx, type ClassValue } from 'clsx';
@@ -15,7 +15,6 @@ export const Navigation = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const location = useLocation();
-    const isHome = location.pathname === '/';
 
     const { toggleCart, items } = useCartStore();
     const cartItemCount = items.reduce((acc, item) => acc + item.quantity, 0);
