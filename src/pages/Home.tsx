@@ -31,7 +31,7 @@ export const Home = () => {
         }
     ]);
 
-    const [trendingCards, setTrendingCards] = useState<any[]>([]);
+    // Database connected hero functionality
 
     useEffect(() => {
         const fetchData = async () => {
@@ -48,16 +48,6 @@ export const Home = () => {
                     desc: d.description,
                     img: d.image_url
                 })));
-            }
-
-            // Fetch Trending
-            const { data: trendData, error: trendError } = await supabase
-                .from('trending_cards')
-                .select('*')
-                .order('sort_order', { ascending: true });
-            
-            if (!trendError && trendData && trendData.length > 0) {
-                setTrendingCards(trendData);
             }
         };
         fetchData();
@@ -340,10 +330,10 @@ export const Home = () => {
                     </motion.div>
                 </motion.div>
 
-                {trendingCards.length === 0 ? (
+                {trending.length === 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12 opacity-50">
                         {/* Fallback to normal products if no editorial cards are set up yet */}
-                        {trending.slice(0, 3).map((product) => (
+                        {products.slice(0, 3).map((product) => (
                             <ProductCard key={product.id} product={product as any} />
                         ))}
                     </div>
@@ -355,19 +345,19 @@ export const Home = () => {
                         variants={staggerContainer}
                         className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8"
                     >
-                        {trendingCards.map((card) => (
+                        {trending.slice(0, 4).map((product) => (
                             <motion.div 
                                 variants={fadeInUp} 
-                                key={card.id} 
+                                key={product.id} 
                                 className="group relative w-full h-[500px] lg:h-[600px] overflow-hidden bg-gray-100 flex flex-col justify-end p-8"
                             >
-                                <img src={card.image_url} alt={card.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 ease-out" />
+                                <img src={product.images[0] || ''} alt={product.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 ease-out" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500"></div>
                                 <div className="relative z-10 text-white">
-                                    <span className="text-[10px] uppercase font-bold tracking-[0.3em] opacity-80 mb-2 block">{card.subtitle}</span>
-                                    <h3 className="text-3xl font-display mb-4">{card.title}</h3>
-                                    <Link to={card.link_url} className="text-[10px] uppercase tracking-[0.2em] font-medium inline-block border-b border-white pb-1 group-hover:text-gray-300 group-hover:border-gray-300 transition-colors">
-                                        Discover
+                                    <span className="text-[10px] uppercase font-bold tracking-[0.3em] opacity-80 mb-2 block">{product.category}</span>
+                                    <h3 className="text-3xl font-display mb-4">{product.name}</h3>
+                                    <Link to={`/product/${product.id}`} className="text-[10px] uppercase tracking-[0.2em] font-medium inline-block border-b border-white pb-1 group-hover:text-gray-300 group-hover:border-gray-300 transition-colors">
+                                        Shop Now
                                     </Link>
                                 </div>
                             </motion.div>

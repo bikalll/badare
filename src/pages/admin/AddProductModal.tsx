@@ -221,7 +221,8 @@ export const AddProductModal = ({ isOpen, onClose }: AddProductModalProps) => {
 
                                     <div className="mt-2">
                                         <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-2">General Product Visuals (Fallback)</label>
-                                        className="border-2 border-slate-300 border-dashed rounded-lg p-8 flex flex-col items-center justify-center bg-slate-50 group hover:bg-indigo-50 hover:border-indigo-300 transition-colors cursor-pointer mt-2"
+                                        <div
+                                            className="border-2 border-slate-300 border-dashed rounded-lg p-8 flex flex-col items-center justify-center bg-slate-50 group hover:bg-indigo-50 hover:border-indigo-300 transition-colors cursor-pointer mt-2"
                                         onClick={() => fileInputRef.current?.click()}
                                     >
                                         <input type="file" multiple ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
