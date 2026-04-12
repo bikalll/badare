@@ -56,6 +56,7 @@ export const Navigation = () => {
                         <Link to="/shop" className="hover:text-black transition-colors">Shop</Link>
                         <Link to="/about" className="hover:text-black transition-colors">About</Link>
                         <Link to="/contact" className="hover:text-black transition-colors">Contact</Link>
+                        <Link to="/track" className="hover:text-black transition-colors">Track</Link>
                     </div>
                 </div>
 
