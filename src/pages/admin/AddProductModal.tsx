@@ -175,7 +175,7 @@ export const AddProductModal = ({ isOpen, onClose }: AddProductModalProps) => {
                                             </button>
                                         </div>
                                         <div className="flex flex-col gap-3">
-                                            {colorInputs.map((colorInput, index) => (
+                                            {colorInputs.map((colorInput) => (
                                                 <div key={colorInput.id} className="flex flex-col sm:flex-row gap-3 items-start sm:items-center bg-white p-3 rounded-lg border border-slate-200 shadow-sm relative group">
                                                     
                                                     <div className="flex items-center gap-3">
