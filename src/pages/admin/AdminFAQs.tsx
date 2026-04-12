@@ -46,7 +46,7 @@ export const AdminFAQs = () => {
     };
 
     const handleDelete = async (id: string) => {
-        if (window.confirm("Are you sure you want to completely erase this transmission parameter?")) {
+        if (window.confirm("Are you sure you want to delete this FAQ?")) {
             await deleteFaq(id);
         }
     };
@@ -55,14 +55,14 @@ export const AdminFAQs = () => {
         <div className="w-full max-w-7xl">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-900 tracking-tight">FAQ Directives</h1>
-                    <p className="text-slate-500 mt-1 text-sm">Manage front-facing customer questions and answers.</p>
+                    <h1 className="text-3xl font-bold text-slate-900 tracking-tight">FAQs</h1>
+                    <p className="text-slate-500 mt-1 text-sm">Manage frequently asked questions.</p>
                 </div>
                 <button 
                     onClick={openCreateForm}
                     className="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition-colors shadow-sm"
                 >
-                    <Plus size={18} /> New Directive
+                    <Plus size={18} /> Add FAQ
                 </button>
             </div>
 
@@ -76,8 +76,8 @@ export const AdminFAQs = () => {
                     </div>
                 ) : faqs.length === 0 ? (
                     <div className="flex flex-col w-full items-center justify-center p-16 text-slate-500">
-                        <p className="font-medium text-lg text-slate-700">No Directives Established</p>
-                        <p className="text-sm mt-1">Customers have no guidance. Create an FAQ.</p>
+                        <p className="font-medium text-lg text-slate-700">No FAQs Found</p>
+                        <p className="text-sm mt-1">Add frequently asked questions here.</p>
                     </div>
                 ) : (
                     <div className="divide-y divide-slate-100">
@@ -91,14 +91,14 @@ export const AdminFAQs = () => {
                                     <button 
                                         onClick={() => openEditForm(faq)}
                                         className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors border border-transparent hover:border-indigo-100 shadow-sm"
-                                        title="Edit Directive"
+                                        title="Edit FAQ"
                                     >
                                         <Edit2 size={18} />
                                     </button>
                                     <button 
                                         onClick={() => handleDelete(faq.id)}
                                         className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors border border-transparent hover:border-rose-100 shadow-sm"
-                                        title="Purge Directive"
+                                        title="Delete FAQ"
                                     >
                                         <Trash2 size={18} />
                                     </button>
@@ -121,7 +121,7 @@ export const AdminFAQs = () => {
                         >
                             <div className="flex justify-between items-center bg-slate-50 border-b border-slate-200 px-6 py-4">
                                 <h2 className="text-lg font-bold text-slate-800">
-                                    {editData?.id ? 'Modify Directive' : 'New Directive'}
+                                    {editData?.id ? 'Edit FAQ' : 'Add FAQ'}
                                 </h2>
                                 <button onClick={() => setIsFormOpen(false)} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-200 rounded-lg transition-colors">
                                     <X size={20} />
@@ -130,7 +130,7 @@ export const AdminFAQs = () => {
 
                             <form onSubmit={handleSave} className="p-6 md:p-8 flex flex-col gap-6">
                                 <div>
-                                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Question (Directive)</label>
+                                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Question</label>
                                     <input 
                                         required 
                                         type="text" 
@@ -140,7 +140,7 @@ export const AdminFAQs = () => {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Answer (Lore / Truth)</label>
+                                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Answer</label>
                                     <textarea 
                                         required 
                                         rows={6}
@@ -162,19 +162,19 @@ export const AdminFAQs = () => {
                                 </div>
                                 
                                 <div className="mt-4 flex justify-end gap-3 pt-4 border-t border-slate-100">
-                                    <button 
+                                     <button 
                                         type="button" 
                                         onClick={() => setIsFormOpen(false)}
                                         className="px-5 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition-colors border border-transparent"
                                     >
-                                        Abort
+                                        Cancel
                                     </button>
                                     <button 
                                         type="submit" 
                                         disabled={isSaving}
                                         className="flex items-center gap-2 bg-indigo-600 text-white px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition-colors shadow-sm disabled:opacity-50"
                                     >
-                                        <Save size={16} /> {isSaving ? 'Compiling...' : 'Confirm Directive'}
+                                        <Save size={16} /> {isSaving ? 'Saving...' : 'Save FAQ'}
                                     </button>
                                 </div>
                             </form>

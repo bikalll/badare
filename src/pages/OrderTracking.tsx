@@ -71,55 +71,55 @@ export const OrderTracking = () => {
             exit={{ opacity: 0 }}
             className="max-w-5xl mx-auto px-6 py-12 md:py-24"
         >
-            <div className="flex flex-col gap-12 text-center mb-16">
-                <h1 className="font-display text-6xl md:text-8xl uppercase tracking-tighter bg-black text-white inline-block w-max mx-auto p-4 md:p-6 shadow-[8px_8px_0_0_#e2e8f0]">
-                    RADAR
+            <div className="flex flex-col gap-6 text-center mb-16">
+                <h1 className="font-display text-3xl md:text-4xl uppercase tracking-widest font-light text-gray-900">
+                    Order Tracking
                 </h1>
-                <p className="text-xl md:text-2xl font-bold uppercase tracking-widest text-gray-500">
-                    Locate your inbound assets.
+                <p className="text-sm font-light uppercase tracking-widest text-gray-500">
+                    Check the status of your recent delivery.
                 </p>
             </div>
 
-            <div className="bg-white border-[6px] border-black p-8 md:p-12 shadow-[12px_12px_0_0_#000] relative max-w-2xl mx-auto mb-16">
+            <div className="bg-gray-50 border border-gray-100 p-8 md:p-12 relative max-w-xl mx-auto mb-16 shadow-sm">
                 <form onSubmit={handleTrackSubmit} className="flex flex-col gap-8">
                     <div className="flex flex-col gap-2 relative">
-                        <label className="text-sm md:text-base font-black tracking-widest uppercase bg-black text-white w-max px-3 py-1 absolute -top-4 left-4 z-10">Order Identifier</label>
+                        <label className="text-xs font-medium tracking-widest uppercase text-gray-500">Order Number</label>
                         <input
                             type="text"
                             required
                             placeholder="BAD-123456"
                             value={orderNumber}
                             onChange={e => setOrderNumber(e.target.value)}
-                            className="bg-gray-50 border-[3px] border-black p-5 md:p-6 outline-none focus:border-black focus:bg-white focus:ring-4 ring-black/20 transition-all font-bold text-xl md:text-2xl font-mono uppercase"
+                            className="bg-white border border-gray-200 p-4 outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all text-sm font-medium uppercase tracking-widest placeholder-gray-300"
                         />
                     </div>
-                    <div className="flex flex-col gap-2 relative mt-4">
-                        <label className="text-sm md:text-base font-black tracking-widest uppercase bg-black text-white w-max px-3 py-1 absolute -top-4 left-4 z-10">Email</label>
+                    <div className="flex flex-col gap-2 relative">
+                        <label className="text-xs font-medium tracking-widest uppercase text-gray-500">Email Address</label>
                         <input
                             type="email"
                             required
-                            placeholder="Enter the email used for the order"
+                            placeholder="Email used for the order"
                             value={email}
                             onChange={e => setEmail(e.target.value)}
-                            className="bg-gray-50 border-[3px] border-black p-5 md:p-6 outline-none focus:border-black focus:bg-white focus:ring-4 ring-black/20 transition-all font-bold text-lg md:text-xl"
+                            className="bg-white border border-gray-200 p-4 outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all text-sm font-light placeholder-gray-300"
                         />
                     </div>
 
                     <button
                         type="submit"
                         disabled={loading}
-                        className="bg-black text-white border-[3px] border-black font-display text-3xl uppercase tracking-widest py-6 hover:bg-white hover:text-black transition-all flex justify-center items-center gap-4 disabled:opacity-70 group"
+                        className="bg-gray-900 text-white font-medium text-sm uppercase tracking-widest py-4 hover:bg-black transition-colors flex justify-center items-center gap-3 disabled:opacity-70 group shadow-sm mt-4"
                     >
                         {loading ? (
-                            <span className="animate-spin w-8 h-8 border-4 border-white border-t-transparent rounded-full group-hover:border-black group-hover:border-t-transparent"></span>
+                            <span className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full opacity-80"></span>
                         ) : (
                             <>
-                                INITIALIZE SCAN <Search className="w-8 h-8" />
+                                Track Order <Search className="w-4 h-4 opacity-70" />
                             </>
                         )}
                     </button>
                     {error && (
-                        <div className="bg-red-500 text-white font-bold p-4 text-center mt-2 border-2 border-red-900 animate-in slide-in-from-top-2">
+                        <div className="text-red-500 text-xs font-medium uppercase tracking-widest text-center mt-2 animate-in slide-in-from-top-2">
                             {error}
                         </div>
                     )}
@@ -129,27 +129,27 @@ export const OrderTracking = () => {
             <AnimatePresence>
                 {orderData && (
                     <motion.div
-                        initial={{ opacity: 0, y: 50 }}
+                        initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="bg-white border-[6px] border-black shadow-[12px_12px_0_0_#000] p-8 md:p-16 mb-24"
+                        className="bg-white border border-gray-100 p-8 md:p-12 mb-24 shadow-sm"
                     >
-                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b-4 border-black pb-8 mb-12 gap-6">
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-200 pb-8 mb-12 gap-6">
                             <div>
-                                <h2 className="font-display text-4xl md:text-6xl uppercase tracking-tighter mix-blend-difference mb-2">STATUS REPORT</h2>
-                                <p className="text-xl font-bold uppercase tracking-widest text-gray-500">ID: {orderData.orderNumber}</p>
+                                <h2 className="text-lg font-medium uppercase tracking-widest text-gray-900 mb-2">Status Report</h2>
+                                <p className="text-xs font-light uppercase tracking-widest text-gray-500">ID: {orderData.orderNumber}</p>
                             </div>
-                            <div className={`px-6 py-3 font-display text-3xl uppercase border-4 shadow-[4px_4px_0_0_#000] ${isCancelled ? 'bg-red-500 border-red-900 text-white' :
-                                orderData.status === 'Delivered' ? 'bg-green-400 border-green-800 text-black' :
-                                    'bg-yellow-400 border-black text-black'
+                            <div className={`px-4 py-2 text-xs font-medium uppercase tracking-widest border ${isCancelled ? 'bg-red-50 border-red-200 text-red-600' :
+                                orderData.status === 'Delivered' ? 'bg-green-50 border-green-200 text-green-700' :
+                                    'bg-gray-100 border-gray-200 text-gray-900'
                                 }`}>
                                 {orderData.status}
                             </div>
                         </div>
 
                         {!isCancelled && (
-                            <div className="relative mb-20 max-w-3xl mx-auto">
-                                <div className="absolute top-1/2 left-0 w-full h-2 bg-gray-200 -translate-y-1/2 z-0 hidden md:block"></div>
-                                <div className="absolute top-1/2 left-0 h-2 bg-black -translate-y-1/2 z-0 transition-all duration-1000 hidden md:block" style={{ width: `${(currentStep / 3) * 100}%` }}></div>
+                            <div className="relative mb-16 max-w-3xl mx-auto px-4">
+                                <div className="absolute top-1/2 left-8 right-8 h-px bg-gray-200 -translate-y-1/2 z-0 hidden md:block"></div>
+                                <div className="absolute top-1/2 left-8 h-px bg-gray-900 -translate-y-1/2 z-0 transition-all duration-1000 hidden md:block" style={{ width: `calc(${(currentStep / 3) * 100}% - 4rem)` }}></div>
 
                                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center relative z-10 gap-8 md:gap-0">
                                     {[
@@ -162,16 +162,15 @@ export const OrderTracking = () => {
                                         const isActive = idx <= currentStep;
                                         const isCurrent = idx === currentStep;
                                         return (
-                                            <div key={idx} className="flex flex-row md:flex-col items-center gap-4 md:gap-4 w-full md:w-auto">
-                                                <div className={`w-16 h-16 rounded-full border-4 flex items-center justify-center transition-all duration-500 shadow-md md:shadow-[4px_4px_0_0_#000] shrink-0 ${isActive ? 'bg-black border-black text-white' : 'bg-white border-gray-300 text-gray-400'
-                                                    } ${isCurrent ? 'scale-110 ring-4 ring-black/20' : ''}`}>
-                                                    <Icon className="w-8 h-8" />
+                                            <div key={idx} className="flex flex-row md:flex-col items-center gap-4 md:gap-3 w-full md:w-auto">
+                                                <div className={`w-12 h-12 rounded-full border flex items-center justify-center transition-all duration-500 shrink-0 ${isActive ? 'bg-gray-900 border-gray-900 text-white shadow-sm' : 'bg-white border-gray-200 text-gray-300'
+                                                    } ${isCurrent ? 'ring-2 ring-offset-2 ring-gray-900' : ''}`}>
+                                                    <Icon className="w-5 h-5" strokeWidth={1.5} />
                                                 </div>
                                                 <div className="flex flex-col md:items-center">
-                                                    <span className={`font-black uppercase tracking-widest md:text-center text-lg ${isActive ? 'text-black' : 'text-gray-400'}`}>
+                                                    <span className={`text-xs uppercase tracking-widest md:text-center font-medium ${isActive ? 'text-gray-900' : 'text-gray-400'}`}>
                                                         {step.title}
                                                     </span>
-                                                    {isCurrent && <span className="text-xs font-bold bg-black text-white px-2 py-1 uppercase mt-1">CURRENT</span>}
                                                 </div>
                                             </div>
                                         );
@@ -180,32 +179,32 @@ export const OrderTracking = () => {
                             </div>
                         )}
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 border-t-4 border-black pt-12">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 border-t border-gray-100 pt-12 mt-8">
                             <div>
-                                <h3 className="font-display text-3xl uppercase mb-6 bg-black text-white inline-block px-4 py-2">DESTINATION</h3>
-                                <div className="bg-gray-50 border-2 border-black p-6 font-bold text-lg leading-relaxed shadow-[4px_4px_0_0_#000]">
-                                    <p className="uppercase text-xl mb-2">{orderData.shippingAddress?.name}</p>
+                                <h3 className="text-xs font-medium uppercase tracking-widest text-gray-500 mb-6">Delivery Details</h3>
+                                <div className="bg-gray-50 border border-gray-100 p-6 text-sm font-light leading-loose text-gray-700">
+                                    <p className="uppercase font-medium text-gray-900 mb-2">{orderData.shippingAddress?.name}</p>
                                     <p>{orderData.shippingAddress?.address}</p>
-                                    <p className="mt-4 pt-4 border-t-2 border-dashed border-gray-300 text-gray-500">CONTACT: {orderData.shippingAddress?.contactNumber}</p>
+                                    <p className="mt-4 pt-4 border-t border-gray-200 uppercase text-xs tracking-widest">Contact: {orderData.shippingAddress?.contactNumber}</p>
                                 </div>
                             </div>
 
                             <div>
-                                <h3 className="font-display text-3xl uppercase mb-6 bg-black text-white inline-block px-4 py-2">MANIFEST</h3>
-                                <div className="bg-gray-50 border-2 border-black p-6 shadow-[4px_4px_0_0_#000]">
+                                <h3 className="text-xs font-medium uppercase tracking-widest text-gray-500 mb-6">Item Manifest</h3>
+                                <div className="bg-gray-50 border border-gray-100 p-6">
                                     <div className="flex flex-col gap-4 mb-6 max-h-64 overflow-y-auto pr-2">
                                         {orderData.items?.map((item: any, idx: number) => (
-                                            <div key={idx} className="flex justify-between items-center text-sm font-bold border-b-2 border-dashed border-gray-300 pb-4 last:border-0 last:pb-0">
+                                            <div key={idx} className="flex justify-between items-center text-sm border-b border-gray-200 pb-4 last:border-0 last:pb-0">
                                                 <div className="flex items-center gap-4">
-                                                    <span className="bg-black text-white px-2 py-1 font-display text-lg">{item.quantity}X</span>
-                                                    <span className="uppercase">{item.name} <span className="text-gray-500">[{item.variant?.size}]</span></span>
+                                                    <span className="text-gray-500 font-light w-6">{item.quantity}×</span>
+                                                    <span className="uppercase tracking-widest font-medium text-gray-900">{item.name} <span className="text-gray-500 font-light text-xs ml-1">({item.variant?.size})</span></span>
                                                 </div>
-                                                <span className="font-mono text-lg">NPR {item.price * item.quantity}</span>
+                                                <span className="font-medium text-gray-900 text-xs">NPR {item.price * item.quantity}</span>
                                             </div>
                                         ))}
                                     </div>
-                                    <div className="flex justify-between items-center text-2xl font-display uppercase pt-4 border-t-4 border-black">
-                                        <span>TOTAL</span>
+                                    <div className="flex justify-between items-center text-sm font-medium uppercase tracking-widest pt-4 border-t border-gray-200 text-gray-900">
+                                        <span>Total</span>
                                         <span>NPR {orderData.total}</span>
                                     </div>
                                 </div>

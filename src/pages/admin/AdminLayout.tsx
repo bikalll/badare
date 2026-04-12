@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { Package, LayoutDashboard, ShoppingCart, Users, Power, ChevronLeft, ChevronRight, Bell, Search, User as UserIcon, HelpCircle, Menu } from 'lucide-react';
+import { Package, LayoutDashboard, ShoppingCart, Users, Power, ChevronLeft, ChevronRight, Bell, Search, User as UserIcon, HelpCircle, Menu, Image as ImageIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '../../store/useAuthStore';
 import { AdminLogin } from './AdminLogin';
@@ -28,7 +28,7 @@ export const AdminLayout = () => {
     }, [setAuth]);
 
     if (isInitializing) {
-        return <div className="min-h-screen bg-black text-white flex items-center justify-center font-display text-4xl uppercase tracking-tighter animate-pulse">Initializing Comm Link...</div>;
+        return <div className="min-h-screen bg-slate-50 flex items-center justify-center font-sans text-sm font-medium text-slate-500">Loading...</div>;
     }
 
     if (!isAuthenticated) {
@@ -37,6 +37,8 @@ export const AdminLayout = () => {
 
     const links = [
         { path: '/admin', label: 'Dashboard', icon: LayoutDashboard },
+        { path: '/admin/hero', label: 'Hero Slides', icon: ImageIcon },
+        { path: '/admin/trending', label: 'Trending', icon: Package },
         { path: '/admin/products', label: 'Products', icon: Package },
         { path: '/admin/orders', label: 'Orders', icon: ShoppingCart },
         { path: '/admin/customers', label: 'Customers', icon: Users },
@@ -59,7 +61,7 @@ export const AdminLayout = () => {
                 ${isCollapsed ? '-translate-x-full md:translate-x-0 md:w-20' : 'translate-x-0 w-64'}`}
             >
                 <div className={`p-6 mb-4 mt-4 flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
-                    {!isCollapsed && <h2 className="text-xl font-bold tracking-wider text-white">Command</h2>}
+                    {!isCollapsed && <h2 className="text-xl font-bold tracking-wider text-white">Dashboard</h2>}
                     <button 
                         onClick={() => setIsCollapsed(!isCollapsed)} 
                         className="hidden md:flex p-1 rounded-md bg-slate-800 hover:bg-slate-700 hover:text-white transition-colors"
@@ -112,7 +114,7 @@ export const AdminLayout = () => {
                     <div className="relative w-full max-w-md hidden md:block">
                         <input 
                             type="text"
-                            placeholder="Global system search..."
+                            placeholder="Search..."
                             className="w-full pl-10 pr-4 py-2 bg-slate-100 border-transparent rounded-lg text-sm outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all font-medium text-slate-700"
                         />
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />

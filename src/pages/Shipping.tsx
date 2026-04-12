@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ScrambleText } from '../components/ScrambleText';
 
 export const Shipping = () => {
     useEffect(() => {
@@ -12,51 +11,49 @@ export const Shipping = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="bg-white text-black min-h-screen pt-40 pb-32 px-6"
+            className="bg-white text-gray-900 min-h-screen pt-40 pb-32 px-6"
         >
-            <div className="max-w-5xl mx-auto">
-                <div className="relative inline-block mb-16">
-                     <h1 className="font-display text-5xl md:text-8xl uppercase tracking-tighter bg-black text-white p-4 brutalist-border-white rotate-2 z-10 relative">
-                        <ScrambleText text="LOGISTICS &" />
+            <div className="max-w-4xl mx-auto">
+                <div className="mb-20 text-center">
+                    <h1 className="font-display text-4xl md:text-5xl uppercase tracking-widest font-light mb-4">
+                        Logistics
                     </h1>
-                     <h1 className="font-display text-5xl md:text-8xl uppercase tracking-tighter bg-white text-black p-4 brutalist-border mt-[-20px] -rotate-1 z-0 relative ml-8 shadow-[16px_16px_0_0_#000]">
-                        <ScrambleText text="RETURNS." />
-                    </h1>
+                    <p className="text-xs font-medium uppercase tracking-widest text-gray-400">Shipping & Returns</p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24">
                     
                     {/* Shipping Box */}
-                    <div className="border-[12px] border-black p-8 shadow-[16px_16px_0_0_#000] bg-white inverted-hover-reverse transition-none">
-                        <h2 className="text-5xl font-display uppercase border-b-8 border-black pb-4 mb-8">1. SHIPPING</h2>
-                        <div className="space-y-6 text-xl font-bold uppercase tracking-widest leading-relaxed">
-                            <p className="bg-black text-white p-2 w-max brutalist-skew">ORIGIN: KATHMANDU, NEPAL</p>
-                            <p>WE SHIP WORLDWIDE USING DHL/FEDEX EXPRESS. NO SLOW MAIL. NO EXCUSES.</p>
-                            <ul className="list-disc list-inside space-y-4 pt-4 border-t-4 border-black">
-                                <li>ASIA: 3-5 BUSINESS DAYS</li>
-                                <li>EUROPE: 5-7 BUSINESS DAYS</li>
-                                <li>NORTH AMERICA: 7-10 BUSINESS DAYS</li>
-                                <li>REST OF WORLD: 10-14 BUSINESS DAYS</li>
+                    <div className="flex flex-col">
+                        <h2 className="text-sm font-medium uppercase tracking-widest border-b border-gray-200 pb-4 mb-6">1. Shipping</h2>
+                        <div className="space-y-6 text-sm font-light text-gray-600 leading-relaxed">
+                            <p className="text-gray-900 font-medium">Origin: Kathmandu, Nepal</p>
+                            <p>We provide expedited global shipping utilizing reliable carriers.</p>
+                            <ul className="space-y-2 py-4 border-y border-gray-100">
+                                <li className="flex justify-between"><span>Asia</span> <span>3-5 Days</span></li>
+                                <li className="flex justify-between"><span>Europe</span> <span>5-7 Days</span></li>
+                                <li className="flex justify-between"><span>North America</span> <span>7-10 Days</span></li>
+                                <li className="flex justify-between"><span>Rest of World</span> <span>10-14 Days</span></li>
                             </ul>
-                            <p className="mt-8 text-sm bg-black text-white p-4 inline-block">
-                                WARNING: YOU ARE RESPONSIBLE FOR CUSTOMS DUTIES IN YOUR COUNTRY.
+                            <p className="text-xs uppercase tracking-widest text-gray-400 mt-6">
+                                * Customers are responsible for any applicable import duties.
                             </p>
                         </div>
                     </div>
 
                     {/* Returns Box */}
-                    <div className="border-[12px] border-black p-8 shadow-[16px_16px_0_0_#000] bg-black text-white inverted-hover transition-none">
-                        <h2 className="text-5xl font-display uppercase border-b-8 border-white pb-4 mb-8 text-white">2. RETURNS</h2>
-                        <div className="space-y-6 text-xl font-bold uppercase tracking-widest leading-relaxed">
-                            <p className="bg-white text-black p-2 w-max brutalist-skew">POLICY: STRICT.</p>
-                            <p>WE PREFER YOU MAKE A FIRM DECISION BEFORE PURCHASE. BUT IF THERE IS A DEFECT, WE GOT YOU.</p>
-                            <ul className="list-disc list-inside space-y-4 pt-4 border-t-4 border-white">
-                                <li>14 DAYS FROM DELIVERY DATE.</li>
-                                <li>MUST BE UNWORN. UNWASHED. TAGS ON.</li>
-                                <li>IF YOU JUST CHANGED YOUR MIND, YOU PAY RETURN SHIPPING TO NEPAL.</li>
+                    <div className="flex flex-col">
+                        <h2 className="text-sm font-medium uppercase tracking-widest border-b border-gray-200 pb-4 mb-6">2. Returns</h2>
+                        <div className="space-y-6 text-sm font-light text-gray-600 leading-relaxed">
+                            <p className="text-gray-900 font-medium">Policy Overview</p>
+                            <p>We encourage mindful purchasing. However, if a product does not meet expectations, our return framework is straightforward.</p>
+                            <ul className="space-y-2 py-4 border-y border-gray-100 list-inside list-disc">
+                                <li>Eligible within 14 days of delivery.</li>
+                                <li>Garments must remain unworn, unwashed, and tagged.</li>
+                                <li>Return logistics costs are borne by the customer.</li>
                             </ul>
-                            <p className="mt-8 text-sm bg-white text-black p-4 inline-block font-black">
-                                CONTACT HELLO@BADARE.COM.NP BEFORE RETURNING ANYTHING.
+                            <p className="text-xs tracking-widest mt-6 bg-gray-50 p-4 border border-gray-100">
+                                Contact <span className="font-medium text-gray-900">hello@badare.com.np</span> to initiate a process.
                             </p>
                         </div>
                     </div>

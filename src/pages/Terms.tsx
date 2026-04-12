@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ScrambleText } from '../components/ScrambleText';
 
 export const Terms = () => {
     useEffect(() => {
@@ -12,41 +11,40 @@ export const Terms = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="bg-black text-white min-h-screen pt-40 pb-32 px-6"
+            className="bg-white text-gray-900 min-h-screen pt-40 pb-32 px-6"
         >
-            <div className="max-w-5xl mx-auto">
-                <h1 className="font-display text-6xl md:text-9xl uppercase tracking-tighter mb-16 bg-white text-black p-4 brutalist-border-white -rotate-2 inline-block">
-                    <ScrambleText text="THE RULES." />
-                </h1>
+            <div className="max-w-3xl mx-auto">
+                <div className="mb-16 border-b border-gray-100 pb-8">
+                    <h1 className="font-display text-4xl md:text-5xl uppercase tracking-widest font-light mb-4">
+                        Terms
+                    </h1>
+                    <p className="text-xs font-medium uppercase tracking-widest text-gray-400">Conditions of Use</p>
+                </div>
 
-                <div className="space-y-12 text-xl font-bold uppercase tracking-widest leading-relaxed border-[12px] border-white p-8 md:p-12 shadow-[24px_24px_0_0_#fff] bg-black relative">
-                    <div className="absolute -top-6 -right-6 bg-white text-black px-4 py-2 text-2xl rotate-[5deg]">
-                        TERMS / CONDITIONS // OBEY
+                <div className="space-y-12 text-sm md:text-base font-light text-gray-600 leading-relaxed">
+                    <div className="space-y-4">
+                        <h2 className="text-xs font-medium tracking-widest uppercase text-gray-900">01. Agreement</h2>
+                        <p>By using this platform, you agree to our terms. We operate from Kathmandu, Nepal, and all our services are bound by local jurisdiction.</p>
                     </div>
 
                     <div className="space-y-4">
-                        <h2 className="text-4xl font-display bg-white text-black px-2 inline-block">RULE 01: AGREEMENT</h2>
-                        <p> BY USING THIS PLATFORM, YOU AGREE TO EVERYTHING WRITTEN HERE. DON'T LIKE IT? CLOSE THE TAB. WE ARE BASED IN KATHMANDU, NEPAL. ACT ACCORDINGLY.</p>
+                        <h2 className="text-xs font-medium tracking-widest uppercase text-gray-900">02. Product Accuracy</h2>
+                        <p>While we strive for precision in our representation, screen variants may alter color perception. Minor variations are a natural outcome of our nuanced manufacturing process.</p>
                     </div>
 
-                    <div className="space-y-4 pt-8 border-t-8 border-white">
-                        <h2 className="text-4xl font-display bg-white text-black px-2 inline-block">RULE 02: PRODUCT ACCURACY</h2>
-                        <p> WE TRY TO BE ACCURATE AS HELL. BUT COLORS LOOK DIFFERENT ON YOUR SCREEN THAN IN REALITY. ALSO, SINCE OUR STUFF IS LIMITED RUN ALMOST-HANDCRAFTED, MINOR VARIATIONS OCCUR. THAT'S CALLED CHARACTER.</p>
+                    <div className="space-y-4">
+                        <h2 className="text-xs font-medium tracking-widest uppercase text-gray-900">03. Pricing & Transactions</h2>
+                        <p>Prices are subject to change without notice. In the event of a pricing error, we reserve the right to correct the charge or cancel the order.</p>
                     </div>
 
-                    <div className="space-y-4 pt-8 border-t-8 border-white">
-                        <h2 className="text-4xl font-display bg-white text-black px-2 inline-block">RULE 03: PAYMENT & PRICING</h2>
-                        <p> PRICES CAN CHANGE AT ANY TIME. IF WE CHARGE YOU THE WRONG AMOUNT BY OUR MISTAKE, WE'LL FIX IT. IF YOU TRY TO SCAM US, WE WILL FIND YOU AND CANCEL YOUR COMMERCE INSTANTLY.</p>
+                    <div className="space-y-4">
+                        <h2 className="text-xs font-medium tracking-widest uppercase text-gray-900">04. Intellectual Property</h2>
+                        <p>All designs, imagery, and assets associated with Badare are strictly our intellectual property. Reproduction without consent is prohibited.</p>
                     </div>
 
-                    <div className="space-y-4 pt-8 border-t-8 border-white">
-                        <h2 className="text-4xl font-display bg-white text-black px-2 inline-block">RULE 04: INTELLECTUAL PROPERTY</h2>
-                        <p> THE NAME BADARE, THE DESIGNS, THE NOISE-OVERLAY, THE GLITCHES, EVERYTHING HERE IS OURS. DO NOT COPY. DO NOT REPRODUCE. DO NOT TRY TO BE US. BE YOU.</p>
-                    </div>
-
-                    <div className="space-y-4 pt-8 border-t-8 border-white">
-                        <h2 className="text-4xl font-display bg-white text-black px-2 inline-block">RULE 05: LIMITATION OF LIABILITY</h2>
-                        <p> IF OUR SYSTEM GOES DOWN, OR A GARMENT DOESN'T CHANGE YOUR LIFE, WE ARE NOT LIABLE FOR DAMAGES. WE JUST MAKE CLOTHES, NOT MIRACLES.</p>
+                    <div className="space-y-4">
+                        <h2 className="text-xs font-medium tracking-widest uppercase text-gray-900">05. Liability</h2>
+                        <p>We are not liable for any consequential, incidental, or indirect damages that result from the use or inability to use our products or platform.</p>
                     </div>
                 </div>
             </div>

@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as Accordion from '@radix-ui/react-accordion';
 import { ChevronDown } from 'lucide-react';
-import { ScrambleText } from '../components/ScrambleText';
 import { useFaqStore } from '../store/useFaqStore';
 
 export const FAQ = () => {
@@ -19,44 +18,45 @@ export const FAQ = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="overflow-hidden bg-white text-black min-h-screen pt-40 pb-32 px-6"
+            className="bg-white text-gray-900 min-h-screen pt-40 pb-32 px-6"
         >
-            <div className="max-w-4xl mx-auto">
-                <h1 className="font-display text-7xl md:text-9xl uppercase tracking-tighter mb-16 brutalist-border p-6 bg-black text-white shadow-[16px_16px_0_0_#000] rotate-1">
-                    <ScrambleText text="ANSWERS." />
-                </h1>
-                
-                <p className="text-2xl font-bold uppercase tracking-widest mb-16 bg-white brutalist-border p-4 shadow-[8px_8px_0_0_#000] transform -rotate-1 w-max">
-                    NO BS. JUST FACTS.
-                </p>
+            <div className="max-w-3xl mx-auto">
+                <div className="text-center mb-20">
+                    <h1 className="font-display text-4xl md:text-6xl uppercase tracking-widest mb-6 font-light">
+                        Answers
+                    </h1>
+                    <p className="text-sm font-light text-gray-500 uppercase tracking-widest">
+                        Common inquiries
+                    </p>
+                </div>
 
                 {loading ? (
-                    <div className="space-y-6">
-                        {[1,2,3].map(i => (
-                            <div key={i} className="animate-pulse bg-gray-200 h-24 w-full brutalist-border shadow-[8px_8px_0_0_#000]"></div>
+                    <div className="space-y-4">
+                        {[1, 2, 3].map(i => (
+                            <div key={i} className="animate-pulse bg-gray-50 h-16 w-full border border-gray-100"></div>
                         ))}
                     </div>
                 ) : faqs.length === 0 ? (
-                    <div className="p-12 border-4 border-black text-center shadow-[8px_8px_0_0_#000]">
-                        <p className="text-2xl font-bold uppercase tracking-widest text-gray-500">NO DIRECTIVES ESTABLISHED YET.</p>
+                    <div className="py-20 text-center">
+                        <p className="text-sm font-medium uppercase tracking-widest text-gray-400">No entries yet.</p>
                     </div>
                 ) : (
-                    <Accordion.Root type="single" collapsible className="space-y-6">
+                    <Accordion.Root type="single" collapsible className="space-y-4">
                         <AnimatePresence>
                             {faqs.map((faq) => (
                                 <Accordion.Item 
                                     key={faq.id} 
                                     value={`item-${faq.id}`}
-                                    className="bg-white brutalist-border shadow-[8px_8px_0_0_#000] overflow-hidden group inverted-hover-reverse transition-none"
+                                    className="bg-white border-b border-gray-200 overflow-hidden group"
                                 >
                                     <Accordion.Header>
-                                        <Accordion.Trigger className="w-full flex items-center justify-between p-6 text-2xl md:text-4xl font-display uppercase tracking-widest text-left">
+                                        <Accordion.Trigger className="w-full flex items-center justify-between py-6 text-sm md:text-base font-medium text-gray-900 hover:text-gray-600 transition-colors text-left outline-none">
                                             {faq.question}
-                                            <ChevronDown className="w-8 h-8 transform transition-transform duration-300 ease-[cubic-bezier(0.87,_0,_0.13,_1)] group-data-[state=open]:rotate-180" />
+                                            <ChevronDown className="w-5 h-5 text-gray-400 transform transition-transform duration-300 group-data-[state=open]:rotate-180" />
                                         </Accordion.Trigger>
                                     </Accordion.Header>
-                                    <Accordion.Content className="overflow-hidden">
-                                        <div className="p-6 pt-0 text-xl font-bold uppercase tracking-widest border-t-4 border-black bg-black text-white whitespace-pre-wrap leading-relaxed">
+                                    <Accordion.Content className="overflow-hidden data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp">
+                                        <div className="pb-6 pr-8 text-sm md:text-base font-light text-gray-600 whitespace-pre-wrap leading-relaxed">
                                             {faq.answer}
                                         </div>
                                     </Accordion.Content>

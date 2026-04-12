@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { MonkeyMascot } from './MonkeyMascot';
-import { MagneticElement } from './MagneticElement';
 import { ShoppingCart, Search, Menu, X } from 'lucide-react';
 import { useCartStore } from '../store/useCartStore';
 import { SearchModal } from './SearchModal';
@@ -36,88 +34,80 @@ export const Navigation = () => {
     }, [location.pathname]);
 
     const navClasses = cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 py-6 flex items-center justify-between",
-        isScrolled ? "bg-white text-black border-b-[8px] border-black brutalist-shadow-lg" :
-            (isHome ? "bg-transparent text-black drop-shadow-md" : "bg-white text-black border-b-[8px] border-black")
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-700 px-6 md:px-16 lg:px-24 py-6 md:py-8 flex items-center justify-between border-b",
+        isScrolled 
+            ? "bg-white/95 backdrop-blur-3xl text-black border-black/5 shadow-sm py-4 md:py-5" 
+            : "bg-transparent text-black border-transparent shadow-none"
     );
 
     return (
-        <>
+        <div className="flex justify-center w-full">
             <nav className={navClasses}>
-                <div className="flex items-center gap-6 flex-1 drop-shadow-md">
+                <div className="flex items-center gap-6 flex-1">
                     <button
-                        className="md:hidden bg-black text-white p-2 brutalist-border-white inverted-hover-reverse"
+                        className="md:hidden text-xs tracking-[0.2em] font-medium uppercase text-black hover:text-gray-500 transition-colors"
                         onClick={() => setIsMobileMenuOpen(true)}
                         aria-label="Open menu"
                     >
-                        <Menu className="w-8 h-8" />
+                        MENU
                     </button>
 
-                    <div className="hidden md:flex gap-4 text-lg uppercase tracking-widest font-black">
-                        <MagneticElement><Link to="/shop" className="bg-white text-black px-4 py-2 brutalist-border inverted-hover shadow-[4px_4px_0_0_#000]">Shop</Link></MagneticElement>
-                        <MagneticElement><Link to="/about" className="bg-white text-black px-4 py-2 brutalist-border inverted-hover shadow-[4px_4px_0_0_#000]">About</Link></MagneticElement>
-                        <MagneticElement><Link to="/contact" className="bg-white text-black px-4 py-2 brutalist-border inverted-hover shadow-[4px_4px_0_0_#000]">Contact</Link></MagneticElement>
-                        <MagneticElement><Link to="/track" className="bg-white text-black px-4 py-2 brutalist-border inverted-hover shadow-[4px_4px_0_0_#000]">Track</Link></MagneticElement>
+                    <div className="hidden md:flex gap-10 text-xs uppercase tracking-[0.2em] font-medium text-gray-500">
+                        <Link to="/" className="hover:text-black transition-colors">Home</Link>
+                        <Link to="/shop" className="hover:text-black transition-colors">Shop</Link>
+                        <Link to="/about" className="hover:text-black transition-colors">About</Link>
+                        <Link to="/contact" className="hover:text-black transition-colors">Contact</Link>
                     </div>
                 </div>
 
-                <div className="flex-1 text-center">
-                    <Link to="/" className="font-display text-5xl md:text-6xl uppercase tracking-tighter funky-glitch-text bg-white text-black px-4 py-1 brutalist-border shadow-[6px_6px_0_0_#000] inline-flex items-center gap-4 -rotate-2 hover:rotate-2 transition-transform">
-                        <MonkeyMascot className="w-12 h-12 hover:animate-spin" />
-                        Badare
+                <div className="flex-1 text-center flex justify-center">
+                    <Link to="/" className="inline-flex items-center justify-center group overflow-visible">
+                        {/* Rotating logo on hover with an elegant slow spin curve */}
+                        <img src="/image.png" alt="BADAR-È" className="h-8 md:h-10 w-auto mix-blend-multiply object-contain group-hover:rotate-[360deg] transition-all duration-1000 ease-in-out" />
                     </Link>
                 </div>
 
-                <div className="flex items-center justify-end gap-6 flex-1 drop-shadow-md">
-                    <MagneticElement>
-                        <button 
-                            onClick={() => setIsSearchOpen(true)}
-                            aria-label="Search" 
-                            className="bg-white text-black p-3 brutalist-border inverted-hover shadow-[4px_4px_0_0_#000]"
-                        >
-                            <Search className="w-6 h-6" />
-                        </button>
-                    </MagneticElement>
-                    <MagneticElement>
-                        <button
-                            onClick={toggleCart}
-                            className="relative bg-white text-black p-3 brutalist-border inverted-hover shadow-[4px_4px_0_0_#000]"
-                            aria-label="Cart"
-                        >
-                            <ShoppingCart className="w-6 h-6" />
-                            {cartItemCount > 0 && (
-                                <span className="absolute -top-3 -right-3 bg-black text-white text-sm font-black w-8 h-8 flex items-center justify-center rounded-none brutalist-border-white animate-wobble">
-                                    {cartItemCount}
-                                </span>
-                            )}
-                        </button>
-                    </MagneticElement>
+                <div className="flex items-center justify-end gap-6 md:gap-10 flex-1 text-xs uppercase tracking-[0.2em] font-medium text-gray-500">
+                    <button 
+                        onClick={() => setIsSearchOpen(true)}
+                        aria-label="Search" 
+                        className="hidden md:block hover:text-black transition-colors"
+                    >
+                        SEARCH
+                    </button>
+                    <button
+                        onClick={toggleCart}
+                        className="hover:text-black transition-colors"
+                        aria-label="Cart"
+                    >
+                        CART {cartItemCount > 0 ? `[${cartItemCount}]` : ''}
+                    </button>
                 </div>
             </nav>
 
             {/* Mobile Menu Overlay */}
             {isMobileMenuOpen && (
                 <div className="fixed inset-0 z-[60] bg-white flex flex-col p-6 overflow-hidden">
-                    <div className="noise-overlay z-[-1]"></div>
-                    <div className="flex justify-between items-center mb-16 border-b-[8px] border-black pb-6">
-                        <Link to="/" className="font-display text-5xl uppercase tracking-tighter bg-black text-white px-4 py-2 brutalist-skew" onClick={() => setIsMobileMenuOpen(false)}>
-                            Badare
+                    <div className="flex justify-between items-center mb-10 pb-4 border-b border-gray-100">
+                        <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>
+                            <img src="/image.png" alt="BADAR-È" className="h-8 w-auto mix-blend-multiply object-contain" />
                         </Link>
-                        <button onClick={() => setIsMobileMenuOpen(false)} aria-label="Close menu" className="bg-black text-white p-2 brutalist-skew">
-                            <X className="w-10 h-10" />
+                        <button onClick={() => setIsMobileMenuOpen(false)} aria-label="Close menu" className="text-black hover:text-gray-600 p-2 transition-colors">
+                            <X className="w-6 h-6" />
                         </button>
                     </div>
-                    <div className="flex flex-col gap-12 text-6xl md:text-8xl font-display uppercase tracking-tighter overflow-y-auto">
-                        <Link to="/shop" className="hover:funky-glitch-text bg-black text-white px-6 py-4 w-fit transition-transform transform hover:translate-x-8 brutalist-shadow-lg">Shop</Link>
-                        <Link to="/about" className="hover:funky-glitch-text bg-black text-white px-6 py-4 w-fit transition-transform transform hover:translate-x-8 brutalist-shadow-lg">About</Link>
-                        <Link to="/contact" className="hover:funky-glitch-text bg-black text-white px-6 py-4 w-fit transition-transform transform hover:translate-x-8 brutalist-shadow-lg">Contact</Link>
-                        <Link to="/track" className="hover:funky-glitch-text bg-black text-white px-6 py-4 w-fit transition-transform transform hover:translate-x-8 brutalist-shadow-lg">Track</Link>
-                        <Link to="/faq" className="hover:funky-glitch-text bg-black text-white px-6 py-4 w-fit transition-transform transform hover:translate-x-8 brutalist-shadow-lg">FAQ</Link>
+                    <div className="flex flex-col gap-8 text-2xl md:text-4xl font-light uppercase tracking-wide overflow-y-auto pl-4">
+                        <Link to="/" className="hover:text-gray-500 transition-colors">Home</Link>
+                        <Link to="/shop" className="hover:text-gray-500 transition-colors">Shop</Link>
+                        <Link to="/about" className="hover:text-gray-500 transition-colors">About</Link>
+                        <Link to="/contact" className="hover:text-gray-500 transition-colors">Contact</Link>
+                        <Link to="/track" className="hover:text-gray-500 transition-colors">Track</Link>
+                        <Link to="/faq" className="hover:text-gray-500 transition-colors">FAQ</Link>
                     </div>
                 </div>
             )}
 
             <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
-        </>
+        </div>
     );
 };

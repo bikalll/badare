@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { useProductStore } from '../store/useProductStore';
-import { X, Search as SearchIcon, ArrowRight } from 'lucide-react';
+import { X, Search as SearchIcon } from 'lucide-react';
 
 interface SearchModalProps {
     isOpen: boolean;
@@ -52,63 +52,63 @@ export const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="absolute inset-0 bg-white/95 backdrop-blur-md"
+                        className="absolute inset-0 bg-white/95 backdrop-blur-sm"
                         onClick={onClose}
                     />
                     
                     <motion.div 
-                        initial={{ y: -50, opacity: 0 }}
+                        initial={{ y: -20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
-                        exit={{ y: -50, opacity: 0 }}
-                        className="relative z-10 w-full max-w-5xl mx-auto pt-24 px-6 md:px-12 flex flex-col items-center"
+                        exit={{ y: -20, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="relative z-10 w-full max-w-4xl mx-auto pt-32 px-6 flex flex-col"
                     >
                         <button 
                             onClick={onClose}
-                            className="absolute top-8 right-6 md:right-12 bg-black text-white p-3 brutalist-border-white inverted-hover-reverse group"
+                            className="absolute top-8 right-6 text-gray-400 hover:text-gray-900 transition-colors p-2"
                         >
-                            <X className="w-8 h-8 group-hover:rotate-90 transition-transform" />
+                            <X className="w-6 h-6" strokeWidth={1.5} />
                         </button>
 
-                        <form onSubmit={handleSearchSubmit} className="w-full relative group">
-                            <SearchIcon className="absolute left-6 top-1/2 -translate-y-1/2 w-10 h-10 text-gray-400 group-focus-within:text-black transition-colors" />
+                        <form onSubmit={handleSearchSubmit} className="w-full relative group border-b border-gray-200">
+                            <SearchIcon className="absolute left-0 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400 group-focus-within:text-gray-900 transition-colors" strokeWidth={1.5} />
                             <input 
                                 ref={inputRef}
                                 type="text" 
                                 value={query}
                                 onChange={(e) => setQuery(e.target.value)}
-                                placeholder="WHAT ARE YOU LOOKING FOR?"
-                                className="w-full bg-transparent border-[8px] border-black text-4xl md:text-6xl font-display uppercase tracking-tighter p-8 pl-24 outline-none focus:bg-white focus:shadow-[16px_16px_0_0_#000] transition-all placeholder-gray-300"
+                                placeholder="Search products..."
+                                className="w-full bg-transparent text-2xl md:text-4xl font-light text-gray-900 placeholder-gray-300 py-6 pl-12 outline-none transition-all"
                             />
                         </form>
 
                         {/* Results Pane */}
-                        <div className="w-full mt-12 flex flex-col gap-4">
+                        <div className="w-full mt-12 flex flex-col gap-2">
                             <AnimatePresence>
                                 {query.length >= 2 && filteredProducts.length > 0 && (
                                     <motion.div 
-                                        initial={{ opacity: 0, y: 20 }}
+                                        initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: 20 }}
-                                        className="flex flex-col gap-4"
+                                        exit={{ opacity: 0, y: 10 }}
+                                        className="flex flex-col gap-2"
                                     >
-                                        <h3 className="text-xl font-bold uppercase tracking-widest border-b-4 border-black pb-2">Top Matches</h3>
+                                        <h3 className="text-xs font-medium uppercase tracking-widest text-gray-500 mb-4 px-2">Suggestions</h3>
                                         {filteredProducts.map((p) => (
                                             <Link 
                                                 key={p.id} 
                                                 to={`/product/${p.id}`}
                                                 onClick={onClose}
-                                                className="group flex items-center justify-between p-6 bg-white border-4 border-black shadow-[8px_8px_0_0_#000] hover:bg-black hover:text-white inverted-hover transition-all"
+                                                className="group flex items-center justify-between p-4 rounded-sm hover:bg-gray-50 transition-colors"
                                             >
                                                 <div className="flex items-center gap-6">
-                                                    <div className="w-20 h-24 overflow-hidden border-2 border-black bg-gray-100 shrink-0">
-                                                        <img src={p.images[0]} alt={p.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                                    <div className="w-12 h-16 overflow-hidden bg-gray-50 shrink-0">
+                                                        <img src={p.images[0]} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                                     </div>
                                                     <div>
-                                                        <h4 className="font-display text-2xl md:text-3xl uppercase tracking-wider">{p.name}</h4>
-                                                        <p className="text-sm font-bold uppercase tracking-widest text-gray-500 group-hover:text-gray-400">{p.category}</p>
+                                                        <h4 className="text-base font-medium text-gray-900 uppercase tracking-widest">{p.name}</h4>
+                                                        <p className="text-xs uppercase tracking-widest text-gray-500 mt-1">{p.category} — NPR {p.price}</p>
                                                     </div>
                                                 </div>
-                                                <ArrowRight className="w-8 h-8 opacity-0 group-hover:opacity-100 transform -translate-x-4 group-hover:translate-x-0 transition-all duration-300" />
                                             </Link>
                                         ))}
                                     </motion.div>
@@ -118,10 +118,9 @@ export const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
                                     <motion.div 
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
-                                        className="text-center p-12 bg-black text-white border-4 border-black shadow-[12px_12px_0_0_#000]"
+                                        className="text-center py-20"
                                     >
-                                        <h3 className="font-display text-4xl uppercase tracking-tighter">NO DATA FOUND FOR &quot;{query}&quot;</h3>
-                                        <p className="mt-4 font-bold tracking-widest text-gray-400">TRY SOMETHING ELSE OR BROWSE THE FULL SHOP.</p>
+                                        <p className="text-sm font-light text-gray-500 uppercase tracking-widest">No results found for "{query}"</p>
                                     </motion.div>
                                 )}
                             </AnimatePresence>

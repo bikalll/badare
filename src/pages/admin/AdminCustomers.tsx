@@ -25,12 +25,12 @@ export const AdminCustomers = () => {
     }, []);
 
     const handleDelete = async (id: string, email: string) => {
-        if (window.confirm(`Are you sure you want to purge subscriber: ${email}?`)) {
+        if (window.confirm(`Are you sure you want to delete subscriber: ${email}?`)) {
             const { error } = await supabase.from('subscribers').delete().eq('id', id);
             if (!error) {
                 setSubscribers(prev => prev.filter(s => s.id !== id));
             } else {
-                alert("Failed to purge subscriber.");
+                alert("Failed to delete subscriber.");
             }
         }
     };
@@ -41,12 +41,12 @@ export const AdminCustomers = () => {
                 <div>
                     <h1 className="text-3xl font-bold text-slate-900 tracking-tight flex items-center gap-3">
                         <Users className="w-8 h-8 text-indigo-600" />
-                        Customer Intel
+                        Customers
                     </h1>
                     <p className="text-slate-500 mt-1 text-sm">Review newsletter subscriptions and contact profiles.</p>
                 </div>
                 <div className="bg-white border border-slate-200 px-4 py-2 rounded-lg shadow-sm text-sm font-semibold text-slate-700">
-                    Total Operatives: <span className="text-indigo-600">{subscribers.length}</span>
+                    Total Customers: <span className="text-indigo-600">{subscribers.length}</span>
                 </div>
             </div>
 
@@ -60,16 +60,16 @@ export const AdminCustomers = () => {
                 ) : subscribers.length === 0 ? (
                     <div className="flex flex-col w-full items-center justify-center p-16 text-slate-500">
                         <Mail className="w-12 h-12 text-slate-300 mb-4" />
-                        <p className="font-medium text-lg text-slate-700">No Customers Identified</p>
-                        <p className="text-sm mt-1">Wait for users to submit the Inner Circle intercept module.</p>
+                        <p className="font-medium text-lg text-slate-700">No Customers Found</p>
+                        <p className="text-sm mt-1">Customers will appear here when they subscribe.</p>
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
-                                    <th className="px-6 py-4">Comm Link (Email)</th>
-                                    <th className="px-6 py-4">Intercept Date</th>
+                                    <th className="px-6 py-4">Email</th>
+                                    <th className="px-6 py-4">Date Subscribed</th>
                                     <th className="px-6 py-4 text-right">Actions</th>
                                 </tr>
                             </thead>
@@ -97,7 +97,7 @@ export const AdminCustomers = () => {
                                             <button 
                                                 onClick={() => handleDelete(sub.id, sub.email)}
                                                 className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors border border-transparent hover:border-rose-100 shadow-sm opacity-0 group-hover:opacity-100"
-                                                title="Purge Intel"
+                                                title="Delete Subscriber"
                                             >
                                                 <Trash2 size={18} />
                                             </button>

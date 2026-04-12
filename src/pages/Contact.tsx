@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ScrambleText } from '../components/ScrambleText';
-import { MagneticElement } from '../components/MagneticElement';
 import { MapPin, Phone, Mail, Send } from 'lucide-react';
 import { supabase } from '../utils/supabaseClient';
 
@@ -36,21 +34,21 @@ export const Contact = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="overflow-hidden bg-black text-white min-h-screen pt-40 pb-32 px-6"
+            className="bg-white text-gray-900 min-h-screen pt-40 pb-32 px-6"
         >
-            <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16">
+            <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 md:gap-24">
 
                 {/* Info Column */}
                 <div className="flex flex-col justify-start">
-                    <h1 className="font-display text-6xl md:text-[10rem] uppercase tracking-tighter mb-4 md:mb-8 leading-[0.8] funky-glitch-text text-white">
-                        <ScrambleText text="TALK." />
+                    <h1 className="font-display text-4xl md:text-6xl uppercase tracking-widest mb-12 font-light">
+                        Connect
                     </h1>
-                    <div className="bg-white text-black p-4 md:p-8 brutalist-border-white shadow-[8px_8px_0_0_#fff] md:shadow-[16px_16px_0_0_#fff] rotate-1 mt-4 md:mt-8 space-y-8 md:space-y-12 shrink-0">
+                    <div className="space-y-12">
                         <div>
-                            <h2 className="text-2xl md:text-4xl font-display uppercase border-b-[4px] md:border-b-8 border-black pb-2 mb-4 md:mb-6 flex items-center gap-2 md:gap-4">
-                                <MapPin className="w-6 h-6 md:w-10 md:h-10" /> ADDRESS
+                            <h2 className="text-xs font-medium uppercase tracking-widest text-gray-400 mb-2 flex items-center gap-2 border-b border-gray-100 pb-2">
+                                <MapPin className="w-4 h-4" /> Headquarters
                             </h2>
-                            <p className="text-lg md:text-2xl font-bold uppercase tracking-widest leading-relaxed">
+                            <p className="text-sm font-light text-gray-600 leading-relaxed mt-4">
                                 BADARE STUDIOS<br />
                                 HADIGAUN<br />
                                 KATHMANDU, 44600<br />
@@ -59,87 +57,86 @@ export const Contact = () => {
                         </div>
 
                         <div>
-                            <h2 className="text-2xl md:text-4xl font-display uppercase border-b-[4px] md:border-b-8 border-black pb-2 mb-4 md:mb-6 flex items-center gap-2 md:gap-4">
-                                <Phone className="w-6 h-6 md:w-10 md:h-10" /> DIRECT LINE
+                            <h2 className="text-xs font-medium uppercase tracking-widest text-gray-400 mb-2 flex items-center gap-2 border-b border-gray-100 pb-2">
+                                <Phone className="w-4 h-4" /> Direct Line
                             </h2>
-                            <p className="text-lg md:text-2xl font-bold uppercase tracking-widest leading-relaxed">
+                            <p className="text-sm font-light text-gray-600 leading-relaxed mt-4">
                                 +977 9808771537<br />
                                 MON-FRI / 10AM - 6PM NPT
                             </p>
                         </div>
 
                         <div>
-                            <h2 className="text-2xl md:text-4xl font-display uppercase border-b-[4px] md:border-b-8 border-black pb-2 mb-4 md:mb-6 flex items-center gap-2 md:gap-4">
-                                <Mail className="w-6 h-6 md:w-10 md:h-10" /> DIGITAL PING
+                            <h2 className="text-xs font-medium uppercase tracking-widest text-gray-400 mb-2 flex items-center gap-2 border-b border-gray-100 pb-2">
+                                <Mail className="w-4 h-4" /> Email
                             </h2>
-                            <p className="text-lg md:text-2xl font-bold uppercase tracking-widest leading-relaxed bg-black text-white p-2 md:p-4 brutalist-skew inline-block mt-2 break-all">
-                                HELLO@BADARE.COM.NP
+                            <p className="text-sm font-light text-gray-600 leading-relaxed mt-4 break-all">
+                                hello@badare.com.np
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <div className="flex flex-col justify-end mt-12 md:mt-0">
+                {/* Form Column */}
+                <div className="flex flex-col justify-start">
                     <form
                         onSubmit={handleSubmit}
-                        className="bg-black border-[4px] md:border-[12px] border-white p-6 md:p-12 shadow-[8px_8px_0_0_#fff] md:shadow-[16px_16px_0_0_#fff] rotate-0 md:-rotate-1 relative"
+                        className="bg-gray-50 border border-gray-100 p-8 md:p-12 shadow-sm rounded-sm"
                     >
-                        <div className="absolute -top-4 md:-top-6 -right-2 md:-right-6 bg-white text-black font-display text-xl md:text-3xl uppercase px-2 md:px-4 py-1 md:py-2 rotate-6 shadow-[4px_4px_0_0_#fff] md:shadow-[8px_8px_0_0_#fff]">
-                            MAKE IT QUICK.
-                        </div>
+                        <h2 className="font-display text-2xl uppercase tracking-widest mb-8 font-light text-gray-900">
+                            Inquiries
+                        </h2>
 
-                        <div className="space-y-8 mt-8">
+                        <div className="space-y-6">
                             <div>
-                                <label className="block text-lg md:text-2xl font-bold uppercase tracking-widest mb-2 md:mb-4">IDENTIFIER (NAME)</label>
+                                <label className="block text-xs font-medium uppercase tracking-widest mb-2 text-gray-500">Name</label>
                                 <input
                                     required
                                     type="text"
                                     value={formData.name}
                                     onChange={e => setFormData({ ...formData, name: e.target.value })}
-                                    className="w-full bg-transparent border-2 md:border-4 border-white p-3 md:p-4 text-lg md:text-2xl font-bold outline-none focus:bg-white focus:text-black focus:shadow-[4px_4px_0_0_#fff] md:focus:shadow-[8px_8px_0_0_#fff] transition-all"
-                                    placeholder="BIKAL BADARE"
+                                    className="w-full bg-white border border-gray-200 p-3 text-sm font-light outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all text-gray-900"
+                                    placeholder="John Doe"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-lg md:text-2xl font-bold uppercase tracking-widest mb-2 md:mb-4">COMM LINK (EMAIL)</label>
+                                <label className="block text-xs font-medium uppercase tracking-widest mb-2 text-gray-500">Email</label>
                                 <input
                                     required
                                     type="email"
                                     value={formData.email}
                                     onChange={e => setFormData({ ...formData, email: e.target.value })}
-                                    className="w-full bg-transparent border-2 md:border-4 border-white p-3 md:p-4 text-lg md:text-2xl font-bold outline-none focus:bg-white focus:text-black focus:shadow-[4px_4px_0_0_#fff] md:focus:shadow-[8px_8px_0_0_#fff] transition-all"
-                                    placeholder="JD@EXAMPLE.COM"
+                                    className="w-full bg-white border border-gray-200 p-3 text-sm font-light outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all text-gray-900"
+                                    placeholder="john@example.com"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-lg md:text-2xl font-bold uppercase tracking-widest mb-2 md:mb-4">THE MESSAGE</label>
+                                <label className="block text-xs font-medium uppercase tracking-widest mb-2 text-gray-500">Message</label>
                                 <textarea
                                     required
                                     rows={5}
                                     value={formData.message}
                                     onChange={e => setFormData({ ...formData, message: e.target.value })}
-                                    className="w-full bg-transparent border-2 md:border-4 border-white p-3 md:p-4 text-lg md:text-2xl font-bold outline-none focus:bg-white focus:text-black focus:shadow-[4px_4px_0_0_#fff] md:focus:shadow-[8px_8px_0_0_#fff] transition-all resize-none"
-                                    placeholder="WHAT DO YOU WANT?"
+                                    className="w-full bg-white border border-gray-200 p-3 text-sm font-light outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all resize-none text-gray-900"
+                                    placeholder="How can we help?"
                                 ></textarea>
                             </div>
 
-                            <MagneticElement>
-                                <button
-                                    disabled={status !== "idle"}
-                                    type="submit"
-                                    className="w-full bg-white text-black font-display text-3xl md:text-5xl uppercase tracking-widest py-4 md:py-6 border-2 md:border-4 border-white hover:bg-black hover:text-white inverted-hover transition-all flex items-center justify-center gap-2 md:gap-4 disabled:opacity-50 disabled:cursor-not-allowed group mt-6 md:mt-8"
-                                >
-                                    {status === "idle" ? (
-                                        <>SEND <Send className="w-6 h-6 md:w-10 md:h-10 group-hover:translate-x-4 transition-transform" /></>
-                                    ) : status === "submitting" ? (
-                                        <ScrambleText text="TRANSMITTING..." />
-                                    ) : (
-                                        "RECEIVED."
-                                    )}
-                                </button>
-                            </MagneticElement>
+                            <button
+                                disabled={status !== "idle"}
+                                type="submit"
+                                className="w-full bg-gray-900 text-white font-medium text-sm uppercase tracking-widest py-4 hover:bg-black transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group mt-8 shadow-sm"
+                            >
+                                {status === "idle" ? (
+                                    <>Send Message <Send className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" /></>
+                                ) : status === "submitting" ? (
+                                    "Sending..."
+                                ) : (
+                                    "Message Sent"
+                                )}
+                            </button>
                         </div>
                     </form>
                 </div>

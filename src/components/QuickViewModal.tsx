@@ -38,35 +38,35 @@ export const QuickViewModal = () => {
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={closeQuickView} />
+            <div className="fixed inset-0 bg-white/80 backdrop-blur-md transition-opacity" onClick={closeQuickView} />
 
-            <div className="relative bg-primary-bg w-full max-w-4xl flex flex-col md:flex-row shadow-2xl animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] border-4 border-black md:h-auto overflow-hidden">
+            <div className="relative bg-white w-full max-w-4xl flex flex-col md:flex-row shadow-2xl animate-in fade-in zoom-in-95 duration-300 max-h-[90vh] md:h-auto overflow-hidden border border-gray-100">
                 <button
                     onClick={closeQuickView}
-                    className="absolute top-2 right-2 md:top-4 md:right-4 z-10 bg-white border-2 border-black p-2 hover:bg-black hover:text-white transition-colors brutalist-shadow"
+                    className="absolute top-4 right-4 z-10 text-gray-400 hover:text-gray-900 transition-colors p-2 bg-white/80 backdrop-blur-sm rounded-full md:bg-transparent"
                 >
-                    <X className="w-6 h-6" />
+                    <X className="w-5 h-5" strokeWidth={1.5} />
                 </button>
 
-                <div className="w-full md:w-1/2 h-48 md:h-[600px] shrink-0 bg-muted border-b-4 md:border-b-0 md:border-r-4 border-black">
+                <div className="w-full md:w-1/2 h-64 md:h-[600px] shrink-0 bg-gray-50 border-r border-gray-100">
                     <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
                 </div>
 
-                <div className="p-6 md:p-12 w-full flex flex-col overflow-y-auto">
-                    <h2 className="font-display text-2xl md:text-4xl uppercase tracking-tighter mb-2">{product.name}</h2>
-                    <p className="text-xl font-medium mb-4">NPR {product.price}</p>
-                    <p className="text-sm text-gray-600 mb-6">{product.description}</p>
+                <div className="p-8 md:p-12 w-full flex flex-col overflow-y-auto">
+                    <h2 className="font-display text-2xl md:text-3xl uppercase tracking-widest mb-3 font-light text-gray-900">{product.name}</h2>
+                    <p className="text-lg font-medium text-gray-800 mb-6">NPR {product.price}</p>
+                    <p className="text-sm font-light text-gray-500 leading-relaxed mb-8">{product.description}</p>
 
-                    <div className="mb-4">
-                        <div className="flex justify-between items-center mb-2">
-                            <span className="text-xs uppercase font-bold tracking-widest">Size: {selectedSize}</span>
+                    <div className="mb-8">
+                        <div className="flex justify-between items-center mb-3">
+                            <span className="text-xs uppercase font-medium tracking-widest text-gray-500">Size: <span className="text-gray-900">{selectedSize}</span></span>
                         </div>
-                        <div className="grid grid-cols-4 gap-2">
+                        <div className="grid grid-cols-4 gap-3">
                             {product.variants.sizes.map((size: string) => (
                                 <button
                                     key={size}
                                     onClick={() => setSelectedSize(size)}
-                                    className={`border py-3 text-sm font-medium transition-colors ${selectedSize === size ? 'border-primary-text bg-primary-text text-primary-bg' : 'border-muted hover:border-black'}`}
+                                    className={`py-3 text-xs font-medium uppercase tracking-widest transition-colors border ${selectedSize === size ? 'border-gray-900 bg-gray-900 text-white' : 'border-gray-200 text-gray-600 hover:border-gray-400'}`}
                                 >
                                     {size}
                                 </button>
@@ -74,14 +74,14 @@ export const QuickViewModal = () => {
                         </div>
                     </div>
 
-                    <div className="mb-10 flex-1">
-                        <span className="text-xs uppercase font-bold tracking-widest block mb-3">Color:</span>
-                        <div className="flex gap-3">
+                    <div className="mb-12 flex-1">
+                        <span className="text-xs uppercase font-medium tracking-widest text-gray-500 block mb-3">Color</span>
+                        <div className="flex gap-4">
                             {product.variants.colors.map((color: string) => (
                                 <button
                                     key={color}
                                     onClick={() => setSelectedColor(color)}
-                                    className={`w-8 h-8 rounded-full border-2 transition-transform ${selectedColor === color ? 'border-primary-text scale-110' : 'border-transparent hover:scale-110'}`}
+                                    className={`w-8 h-8 rounded-full border-2 transition-transform ${selectedColor === color ? 'border-gray-900 ring-2 ring-offset-2 ring-gray-900 scale-100' : 'border-transparent hover:scale-110 shadow-sm'}`}
                                     style={{ backgroundColor: color }}
                                     aria-label={`Select color ${color}`}
                                 />
@@ -91,7 +91,7 @@ export const QuickViewModal = () => {
 
                     <button
                         onClick={handleAdd}
-                        className="w-full bg-black text-white font-display text-lg uppercase tracking-widest py-4 hover:bg-white hover:text-black transition-colors mt-auto border-2 border-transparent hover:border-black brutalist-border"
+                        className="w-full bg-gray-900 text-white font-medium text-sm uppercase tracking-widest py-4 hover:bg-black transition-colors mt-auto shadow-sm"
                     >
                         Add to Cart
                     </button>

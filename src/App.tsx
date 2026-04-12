@@ -19,6 +19,8 @@ import { AdminProducts } from './pages/admin/AdminProducts';
 import { AdminOrders } from './pages/admin/AdminOrders';
 import { AdminCustomers } from './pages/admin/AdminCustomers';
 import { AdminFAQs } from './pages/admin/AdminFAQs';
+import { AdminHero } from './pages/admin/AdminHero';
+import { AdminTrending } from './pages/admin/AdminTrending';
 import { Layout } from './components/Layout';
 import { Preloader } from './components/Preloader';
 
@@ -38,7 +40,6 @@ function App() {
     return (
         <Router>
             <Preloader />
-            <div className="noise-overlay pointer-events-none z-50"></div>
             <Routes>
                 <Route element={<FrontendLayout />}>
                     <Route path="/" element={<Home />} />
@@ -60,6 +61,8 @@ function App() {
                     <Route path="orders" element={<AdminOrders />} />
                     <Route path="customers" element={<AdminCustomers />} />
                     <Route path="faqs" element={<AdminFAQs />} />
+                    <Route path="hero" element={<AdminHero />} />
+                    <Route path="trending" element={<AdminTrending />} />
                 </Route>
             </Routes>
         </Router>

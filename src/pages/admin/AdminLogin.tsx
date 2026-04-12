@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Lock } from 'lucide-react';
-import { ScrambleText } from '../../components/ScrambleText';
 import { supabase } from '../../utils/supabaseClient';
 
 export const AdminLogin = () => {
@@ -27,63 +26,62 @@ export const AdminLogin = () => {
     };
 
     return (
-        <div className="min-h-screen bg-black flex items-center justify-center p-6 relative overflow-hidden z-50">
-            {/* Background Texture */}
-            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMSI+PC9yZWN0Pgo8cGF0aCBkPSJNMCAwTDggOFoiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLW9wYWNpdHk9IjAuMSI+PC9wYXRoPjwvc3ZnPg==')] mix-blend-overlay opacity-30 pointer-events-none"></div>
-
-            <div className="bg-white border-[16px] border-white text-black p-8 md:p-12 w-full max-w-lg brutalist-shadow-lg rotate-1 scale-105 z-10 relative">
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 relative overflow-hidden z-50">
+            <div className="bg-white border border-slate-200 text-slate-800 p-8 md:p-12 w-full max-w-md rounded-2xl shadow-xl z-10 relative">
                 <div className="flex justify-center mb-8">
-                    <div className="bg-black text-white p-4 brutalist-border shadow-[8px_8px_0_0_#000] -rotate-2">
-                        <Lock className="w-12 h-12" />
+                    <div className="bg-indigo-50 text-indigo-600 p-4 rounded-full border border-indigo-100">
+                        <Lock className="w-8 h-8" />
                     </div>
                 </div>
 
-                <h1 className="font-display text-5xl md:text-6xl text-center uppercase tracking-tighter mb-8 leading-[0.9]">
-                    <ScrambleText text="Admin" /> <br/>
-                    <span className="funky-glitch-text inline-block transform -rotate-1">Access</span>
+                <h1 className="text-2xl font-bold text-center text-slate-900 tracking-tight mb-2">
+                    Admin Access
                 </h1>
+                <p className="text-center text-sm font-medium text-slate-500 mb-8">
+                    Enter your credentials to manage the store.
+                </p>
 
                 {error && (
-                    <div className="bg-red-600 text-white font-bold uppercase tracking-widest p-4 mb-6 brutalist-border shadow-[4px_4px_0_0_#000] rotate-1">
-                        ERROR: {error}
+                    <div className="bg-rose-50 border border-rose-200 text-rose-600 font-medium text-sm p-4 rounded-lg mb-6 text-center">
+                        {error}
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-                    <div className="flex flex-col gap-2 relative">
-                        <label className="text-xl font-black tracking-widest uppercase bg-black text-white px-2 py-1 absolute -top-4 left-4 rotate-[2deg]">Access ID</label>
+                <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+                    <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-semibold tracking-wider uppercase text-slate-500">Email Address</label>
                         <input 
-                            type="text" 
+                            type="email" 
                             required 
                             placeholder="admin@badare.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="bg-gray-100 border-4 border-black p-4 outline-none focus:translate-x-1 focus:translate-y-1 focus:shadow-none shadow-[4px_4px_0_0_#000] transition-all font-bold uppercase tracking-widest"
+                            className="bg-white border border-slate-300 rounded-lg p-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all text-sm font-medium text-slate-900"
                         />
                     </div>
 
-                    <div className="flex flex-col gap-2 relative mt-4">
-                        <label className="text-xl font-black tracking-widest uppercase bg-black text-white px-2 py-1 absolute -top-4 left-4 -rotate-[2deg]">Passcode</label>
+                    <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-semibold tracking-wider uppercase text-slate-500">Password</label>
                         <input 
                             type="password" 
                             required 
                             placeholder="••••••••"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="bg-gray-100 border-4 border-black p-4 outline-none focus:translate-x-1 focus:translate-y-1 focus:shadow-none shadow-[4px_4px_0_0_#000] transition-all font-bold tracking-widest"
+                            className="bg-white border border-slate-300 rounded-lg p-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all text-sm font-medium text-slate-900"
                         />
                     </div>
 
                     <button 
                         type="submit" 
                         disabled={loading}
-                        className="bg-black text-white font-display text-3xl uppercase tracking-widest p-6 mt-6 brutalist-border shadow-[8px_8px_0_0_#000] hover:bg-white hover:text-black hover:shadow-[12px_12px_0_0_#000] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="bg-indigo-600 text-white font-semibold text-sm py-3 mt-4 rounded-lg shadow-sm hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                     >
-                        {loading ? 'Authenticating...' : 'Enter System'}
+                        {loading ? 'Authenticating...' : 'Sign In'}
                     </button>
                     
-                    <p className="text-center font-bold text-sm uppercase text-gray-500 mt-4 tracking-widest">
-                        AUTHORIZED PERSONNEL ONLY.
+                    <p className="text-center font-medium text-xs text-slate-400 mt-4">
+                        Secure access for authorized personnel.
                     </p>
                 </form>
             </div>

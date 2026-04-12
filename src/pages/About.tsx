@@ -1,8 +1,6 @@
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ScrambleText } from '../components/ScrambleText';
-import { MagneticElement } from '../components/MagneticElement';
 
 export const About = () => {
     useEffect(() => {
@@ -14,75 +12,96 @@ export const About = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="overflow-hidden bg-black text-white pb-32"
+            className="bg-[#fcfcfc] text-gray-900 pb-32 pt-24"
         >
-            {/* Massive Ticker Background */}
-            <div className="fixed inset-0 pointer-events-none opacity-20 flex flex-col justify-center gap-12 z-0 whitespace-nowrap overflow-hidden">
-                <div className="font-display text-7xl md:text-[10rem] lg:text-[15rem] leading-none uppercase tracking-tighter text-transparent" style={{ WebkitTextStroke: '2px white' }}>BADARE BEYOU BADARE BEYOU</div>
-                <div className="font-display text-7xl md:text-[10rem] lg:text-[15rem] leading-none uppercase tracking-tighter text-transparent -translate-x-[20%]" style={{ WebkitTextStroke: '2px white' }}>BE YOU BE YOU BE YOU</div>
-                <div className="font-display text-7xl md:text-[10rem] lg:text-[15rem] leading-none uppercase tracking-tighter text-transparent translate-x-[10%]" style={{ WebkitTextStroke: '2px white' }}>NOISE IS CHEAP NOISE IS CHEAP</div>
-            </div>
-
-            <section className="relative z-10 min-h-screen flex items-center justify-center px-6 brutalist-border-white m-4 shadow-[16px_16px_0_0_#fff]">
-                <h1 className="font-display text-5xl md:text-[10rem] lg:text-[15rem] uppercase tracking-tighter max-w-7xl text-center leading-[0.8] text-white funky-glitch-text mix-blend-difference hover:scale-105 transition-transform duration-500 relative">
-                    ANTI<br />STANDARD.
-                    <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-sm md:text-2xl bg-white text-black font-bold uppercase tracking-widest py-1 md:py-2 px-4 md:px-8 -rotate-6 shadow-[4px_4px_0_0_#fff] md:shadow-[8px_8px_0_0_#fff]">EST. 2026</span>
-                </h1>
+            {/* Hero Image Section */}
+            <section className="relative min-h-[75vh] flex items-center justify-center px-6 overflow-hidden">
+                <div className="absolute inset-0 z-0">
+                    <img 
+                        src="https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?auto=format&fit=crop&q=80&w=2500" 
+                        alt="Editorial Manifesto" 
+                        className="w-full h-full object-cover grayscale opacity-20 object-top"
+                    />
+                </div>
+                <div className="relative z-10 w-full max-w-7xl pt-16 text-center md:text-left">
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
+                    >
+                        <span className="block text-[10px] uppercase font-bold tracking-[0.4em] text-gray-400 mb-6">Established 2026</span>
+                        <h1 className="font-display text-5xl md:text-8xl lg:text-9xl uppercase tracking-tighter leading-[0.8] font-black text-black">
+                            THE <br /> MANIFESTO.
+                        </h1>
+                    </motion.div>
+                </div>
             </section>
 
-            <section className="relative z-10 py-32 px-6 max-w-[90rem] mx-auto">
-                <div className="flex flex-col items-center max-w-5xl mx-auto">
-                    <div className="w-full bg-white text-black p-6 md:p-12 lg:p-24 border-[8px] md:border-[16px] border-black shadow-[12px_12px_0_0_#fff] md:shadow-[24px_24px_0_0_#fff] rotate-1 hover:rotate-2 transition-transform">
-                        <h2 className="font-display text-4xl md:text-8xl uppercase tracking-tighter mb-8 md:mb-12 border-b-[6px] md:border-b-[12px] border-black pb-4 leading-none">RAW<br />DYNAMICS.</h2>
-                        <p className="text-lg md:text-2xl font-bold uppercase tracking-widest leading-relaxed mb-8">
-                            Badare refuses to play the safe game. We synthesize pure defiance into structural fashion. Every seam has a purpose. Every silhouette is an act of rebellion.
-                        </p>
-                        <p className="text-lg md:text-2xl font-bold uppercase tracking-widest leading-relaxed bg-black text-white inline-block p-4 mt-8 brutalist-skew">
-                            Defy gravity. <br />Embrace structure. <br />Dismantle the normal.
-                        </p>
+            {/* Core Ethos - Two Column */}
+            <section className="relative z-10 py-32 px-6 max-w-7xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24">
+                    <div className="flex flex-col justify-end">
+                        <h2 className="font-display text-3xl md:text-5xl uppercase tracking-tight mb-8 text-black leading-none">
+                            We don't do<br /><span className="italic text-gray-500 font-light">seasons.</span>
+                        </h2>
+                        <img 
+                            src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=1500" 
+                            alt="Studio" 
+                            className="w-full aspect-[3/4] object-cover grayscale hover:grayscale-0 transition-all duration-1000 mt-6"
+                        />
+                    </div>
+                    <div>
+                        <div className="prose prose-lg prose-gray text-gray-600 font-light leading-relaxed space-y-12 mb-16 pt-8 md:pt-48">
+                            <p className="text-xl md:text-2xl text-black leading-snug">
+                                Badar-è was not built to follow the fashion calendar. We exist to disrupt the noise, creating uniforms for those who refuse to blend in.
+                            </p>
+                            <p className="text-sm md:text-base">
+                                Traditional fashion forces you into boxes. Spring, Summer, Fall, Winter. We believe your style shouldn't be dictated by the weather passing outside your window. We drop when we have something to say. We build garments that are ruthless in their quality and unapologetic in their cut.
+                            </p>
+                            <p className="text-sm md:text-base pl-6 border-l border-black italic">
+                                "The streets don't ask for permission. Neither should your wardrobe."
+                            </p>
+                        </div>
+                        <img 
+                            src="https://images.unsplash.com/photo-1550614000-4b95d466f272?auto=format&fit=crop&q=80&w=1500" 
+                            alt="Archive" 
+                            className="w-full aspect-square object-cover grayscale mix-blend-multiply"
+                        />
                     </div>
                 </div>
             </section>
 
-            <section className="relative z-10 py-48 px-6 text-center bg-white text-black my-48 border-y-[32px] border-black brutalist-shadow-lg transform skew-y-3">
-                <div className="max-w-7xl mx-auto flex flex-col gap-32 transform -skew-y-3">
-                    <motion.h2
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        whileInView={{ scale: 1, opacity: 1 }}
-                        transition={{ duration: 0.5 }}
-                        className="font-display text-3xl md:text-7xl lg:text-9xl uppercase tracking-tighter leading-none"
+            {/* Statement Ticker */}
+            <section className="relative z-10 py-32 bg-black text-white overflow-hidden border-y border-gray-900 mt-12 mb-24">
+                <div className="whitespace-nowrap flex gap-16 overflow-hidden max-w-full">
+                    <motion.div 
+                        animate={{ x: ["0%", "-50%"] }} 
+                        transition={{ repeat: Infinity, ease: "linear", duration: 15 }}
+                        className="flex gap-16 items-center"
                     >
-                        <span className="bg-black text-white px-4 md:px-8 py-2 block w-max mx-auto rotate-[-2deg] mb-6 shadow-[8px_8px_0_0_#000] md:shadow-[16px_16px_0_0_#000]">"NOISE IS CHEAP."</span>
-                        <span className="block border-[4px] md:border-8 border-black p-4 md:p-6 inline-block shadow-[12px_12px_0_0_#000] md:shadow-[24px_24px_0_0_#000] rotate-1">SILENCE IS LUXURY.</span>
-                    </motion.h2>
-
-                    <motion.h2
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        whileInView={{ scale: 1, opacity: 1 }}
-                        transition={{ duration: 0.5, delay: 0.2 }}
-                        className="font-display text-3xl md:text-7xl lg:text-9xl uppercase tracking-tighter leading-none"
-                    >
-                        <span className="bg-black text-white px-4 md:px-8 py-2 block w-max mx-auto rotate-[1deg] mb-6 shadow-[-8px_8px_0_0_#000] md:shadow-[-16px_16px_0_0_#000]"><ScrambleText text="FUNCTION IS TRUTH." /></span>
-                        <span className="block border-[4px] md:border-8 border-black p-4 md:p-6 inline-block shadow-[-12px_12px_0_0_#000] md:shadow-[-24px_24px_0_0_#000] -rotate-2"><ScrambleText text="DESIGN THE CHARACTER." /></span>
-                    </motion.h2>
+                        <h2 className="font-display text-4xl md:text-6xl lg:text-7xl uppercase tracking-tighter">BE YOU.</h2>
+                        <span className="text-gray-600">//</span>
+                        <h2 className="font-display text-4xl md:text-6xl lg:text-7xl uppercase tracking-tighter">STAY WEIRD.</h2>
+                        <span className="text-gray-600">//</span>
+                        <h2 className="font-display text-4xl md:text-6xl lg:text-7xl uppercase tracking-tighter">OWN IT.</h2>
+                        <span className="text-gray-600">//</span>
+                        <h2 className="font-display text-4xl md:text-6xl lg:text-7xl uppercase tracking-tighter">BE YOU.</h2>
+                        <span className="text-gray-600">//</span>
+                        <h2 className="font-display text-4xl md:text-6xl lg:text-7xl uppercase tracking-tighter">STAY WEIRD.</h2>
+                        <span className="text-gray-600">//</span>
+                        <h2 className="font-display text-4xl md:text-6xl lg:text-7xl uppercase tracking-tighter">OWN IT.</h2>
+                    </motion.div>
                 </div>
             </section>
 
-            <div className="relative z-10 pt-32 pb-20 px-6 max-w-7xl mx-auto flex flex-col items-center">
-                <h1 className="font-display text-5xl md:text-9xl lg:text-[12rem] uppercase tracking-tighter mb-8 leading-none bg-white text-black p-4 brutalist-border-white rotate-2">
-                    <ScrambleText text="Be" /> <ScrambleText text="You" />
-                </h1>
-            </div>
-
-            <section className="relative z-10 py-16 md:py-32 px-6 bg-black text-white text-center border-[8px] md:border-[16px] border-white m-4 md:m-6 rotate-1 hover:-rotate-1 transition-transform shadow-[8px_8px_0_0_#fff] md:shadow-[16px_16px_0_0_#fff]">
-                <h2 className="font-display text-5xl md:text-8xl lg:text-[10rem] uppercase tracking-tighter mb-10 md:mb-16 leading-[0.85] funky-glitch-text cursor-none">
-                    <ScrambleText text="ENOUGH" /><br /><ScrambleText text="READING." />
+            {/* Ending Hook */}
+            <section className="relative z-10 py-16 px-6 text-center max-w-3xl mx-auto">
+                <h2 className="text-[10px] md:text-xs font-bold uppercase tracking-[0.4em] mb-8 text-black">
+                    Join The Culture
                 </h2>
-                <MagneticElement>
-                    <Link to="/shop" className="bg-white text-black font-display text-2xl md:text-6xl uppercase tracking-widest px-8 md:px-16 py-4 md:py-8 border-[6px] md:border-[12px] border-black shadow-[8px_8px_0_0_#fff] md:shadow-[16px_16px_0_0_#fff] hover:bg-black hover:text-white inverted-hover transition-transform inline-block rotate-[-2deg] scale-105 hover:scale-[1.15]">
-                        WEAR SOMETHING NOW.
-                    </Link>
-                </MagneticElement>
+                <Link to="/shop" className="bg-transparent border border-black text-black font-semibold text-xs md:text-sm uppercase tracking-[0.3em] px-16 py-6 hover:bg-black hover:text-white transition-colors duration-500 inline-block">
+                    Enter the Shop
+                </Link>
             </section>
         </motion.div>
     );
