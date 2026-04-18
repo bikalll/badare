@@ -1,6 +1,0 @@
-
-> badare-frontend@0.0.0 build
-> tsc -b && vite build
-
-src/pages/admin/AdminHero.tsx(25,12): error TS6133: 'previewingImage' is declared but its value is never read.
-src/pages/admin/AdminHero.tsx(25,29): error TS6133: 'setPreviewingImage' is declared but its value is never read.

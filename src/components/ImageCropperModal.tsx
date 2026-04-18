@@ -73,10 +73,10 @@ export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({
 
                         <Dialog.Content asChild>
                             <motion.div
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.95 }}
-                                className="fixed top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] z-[210] w-full max-w-xl bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col"
+                                initial={{ opacity: 0, scale: 0.95, x: "-50%", y: "-50%" }}
+                                animate={{ opacity: 1, scale: 1, x: "-50%", y: "-50%" }}
+                                exit={{ opacity: 0, scale: 0.95, x: "-50%", y: "-50%" }}
+                                className="fixed top-[50%] left-[50%] z-[210] w-full max-w-xl bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col"
                             >
                                 <div className="flex justify-between items-center p-4 border-b border-slate-100">
                                     <Dialog.Title className="text-lg font-bold text-slate-800">
@@ -94,6 +94,8 @@ export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({
                                         image={imageUrl}
                                         crop={crop}
                                         zoom={zoom}
+                                        minZoom={0.1}
+                                        restrictPosition={false}
                                         rotation={rotation}
                                         aspect={aspectRatio}
                                         onCropChange={onCropChange}
@@ -110,7 +112,7 @@ export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({
                                             <input
                                                 type="range"
                                                 value={zoom}
-                                                min={1}
+                                                min={0.1}
                                                 max={3}
                                                 step={0.1}
                                                 aria-labelledby="Zoom"

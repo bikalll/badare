@@ -33,7 +33,7 @@ export const EditProductModal = ({ isOpen, onClose, product }: EditProductModalP
         isOpen: boolean;
         file: File | null;
         imageUrl: string;
-        type: 'color' | 'general' | null;
+        type: 'color' | 'general' | 'existing-color' | 'existing-general' | null;
         colorId?: string;
         index: number;
     } | null>(null);
@@ -50,12 +50,23 @@ export const EditProductModal = ({ isOpen, onClose, product }: EditProductModalP
                 }
                 return c;
             }));
+        } else if (type === 'existing-color' && colorId) {
+            setColorInputs(prev => prev.map(c => {
+                if (c.id === colorId) {
+                    const newExisting = c.existingImages.filter((_, i) => i !== index);
+                    return { ...c, existingImages: newExisting, files: [...c.files, croppedFile] };
+                }
+                return c;
+            }));
         } else if (type === 'general') {
             setImageFiles(prev => {
                 const newFiles = [...prev];
                 newFiles[index] = croppedFile;
                 return newFiles;
             });
+        } else if (type === 'existing-general') {
+            setExistingImages(prev => prev.filter((_, i) => i !== index));
+            setImageFiles(prev => [...prev, croppedFile]);
         }
         setCropModalData(null);
     };
@@ -66,6 +77,18 @@ export const EditProductModal = ({ isOpen, onClose, product }: EditProductModalP
             isOpen: true,
             file,
             imageUrl: URL.createObjectURL(file),
+            type,
+            index,
+            colorId,
+        });
+    };
+
+    const openCropModalForExisting = (e: React.MouseEvent, type: 'existing-color' | 'existing-general', imageUrl: string, index: number, colorId?: string) => {
+        e.stopPropagation();
+        setCropModalData({
+            isOpen: true,
+            file: null,
+            imageUrl,
             type,
             index,
             colorId,
@@ -277,10 +300,15 @@ export const EditProductModal = ({ isOpen, onClose, product }: EditProductModalP
 
                                                             {colorInput.existingImages.map((src, i) => (
                                                                 <div key={`ext-${i}`} className="relative w-12 h-12 rounded border border-slate-200 overflow-hidden shadow-sm group/img">
-                                                                    <img src={src} alt="existing" className="w-full h-full object-cover opacity-80" />
-                                                                    <button type="button" onClick={() => removeExistingColorImage(colorInput.id, i)} className="absolute inset-0 bg-red-500/20 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity">
-                                                                        <Trash2 size={14} className="text-red-600" />
-                                                                    </button>
+                                                                    <img src={src} alt="existing" className="w-full h-full object-cover opacity-80 group-hover/img:opacity-40 transition-opacity" />
+                                                                    <div className="absolute inset-0 opacity-0 group-hover/img:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1">
+                                                                        <button type="button" onClick={(e) => openCropModalForExisting(e, 'existing-color', src, i, colorInput.id)} className="bg-slate-900/80 text-white p-1 rounded-sm hover:bg-indigo-600 transition-colors" title="Crop">
+                                                                            <Crop size={12} />
+                                                                        </button>
+                                                                        <button type="button" onClick={(e) => { e.stopPropagation(); removeExistingColorImage(colorInput.id, i); }} className="bg-rose-500/90 text-white p-1 rounded-sm hover:bg-rose-500 transition-colors" title="Delete">
+                                                                            <Trash2 size={12} />
+                                                                        </button>
+                                                                    </div>
                                                                 </div>
                                                             ))}
 
@@ -346,10 +374,15 @@ export const EditProductModal = ({ isOpen, onClose, product }: EditProductModalP
                                                 <div className="flex flex-wrap gap-3 justify-center">
                                                     {existingImages.map((src, i) => (
                                                         <div key={i} className="relative w-20 h-20 border border-slate-200 rounded overflow-hidden shadow-sm bg-white group/img">
-                                                            <img src={src} className="w-full h-full object-cover opacity-80" alt="existing" />
-                                                            <button type="button" onClick={(e) => removeExistingImage(e, i)} className="absolute inset-0 bg-red-500/20 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity">
-                                                                <Trash2 size={18} className="text-red-600" />
-                                                            </button>
+                                                            <img src={src} className="w-full h-full object-cover opacity-80 group-hover/img:opacity-40 transition-opacity" alt="existing" />
+                                                            <div className="absolute inset-0 opacity-0 group-hover/img:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1">
+                                                                <button type="button" onClick={(e) => openCropModalForExisting(e, 'existing-general', src, i)} className="bg-slate-900/80 text-white p-1.5 rounded-full hover:bg-indigo-600 transition-colors hover:scale-110 shadow-sm" title="Crop">
+                                                                    <Crop size={14} />
+                                                                </button>
+                                                                <button type="button" onClick={(e) => { e.stopPropagation(); removeExistingImage(e, i); }} className="bg-rose-500/90 text-white p-1.5 rounded-full hover:bg-rose-500 transition-colors hover:scale-110 shadow-sm" title="Delete">
+                                                                    <Trash2 size={14} />
+                                                                </button>
+                                                            </div>
                                                         </div>
                                                     ))}
                                                     <div className="w-full text-center mt-3 text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center justify-center gap-1.5 pointer-events-none">
