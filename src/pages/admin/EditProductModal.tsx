@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
-import { X, Upload, Check, Plus, Trash2 } from 'lucide-react';
+import { X, Upload, Check, Plus, Trash2, Crop } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ImageCropperModal } from '../../components/ImageCropperModal';
 import { useProductStore } from '../../store/useProductStore';
 
 interface EditProductModalProps {
@@ -27,6 +28,49 @@ export const EditProductModal = ({ isOpen, onClose, product }: EditProductModalP
     const [imageFiles, setImageFiles] = useState<File[]>([]);
     const [existingImages, setExistingImages] = useState<string[]>([]);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const [cropModalData, setCropModalData] = useState<{
+        isOpen: boolean;
+        file: File | null;
+        imageUrl: string;
+        type: 'color' | 'general' | null;
+        colorId?: string;
+        index: number;
+    } | null>(null);
+
+    const handleCropComplete = (croppedFile: File) => {
+        if (!cropModalData) return;
+        const { type, colorId, index } = cropModalData;
+        if (type === 'color' && colorId) {
+            setColorInputs(prev => prev.map(c => {
+                if (c.id === colorId) {
+                    const newFiles = [...c.files];
+                    newFiles[index] = croppedFile;
+                    return { ...c, files: newFiles };
+                }
+                return c;
+            }));
+        } else if (type === 'general') {
+            setImageFiles(prev => {
+                const newFiles = [...prev];
+                newFiles[index] = croppedFile;
+                return newFiles;
+            });
+        }
+        setCropModalData(null);
+    };
+
+    const openCropModal = (e: React.MouseEvent, type: 'color' | 'general', file: File, index: number, colorId?: string) => {
+        e.stopPropagation();
+        setCropModalData({
+            isOpen: true,
+            file,
+            imageUrl: URL.createObjectURL(file),
+            type,
+            index,
+            colorId,
+        });
+    };
 
     useEffect(() => {
         if (product && isOpen) {
@@ -242,10 +286,15 @@ export const EditProductModal = ({ isOpen, onClose, product }: EditProductModalP
 
                                                             {colorInput.files.map((f, i) => (
                                                                 <div key={i} className="relative w-12 h-12 rounded border border-slate-200 overflow-hidden shadow-sm group/img">
-                                                                    <img src={URL.createObjectURL(f)} alt="pic" className="w-full h-full object-cover opacity-80" />
-                                                                    <button type="button" onClick={() => removeNewColorImage(colorInput.id, i)} className="absolute inset-0 bg-red-500/20 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity">
-                                                                        <Trash2 size={14} className="text-red-600" />
-                                                                    </button>
+                                                                    <img src={URL.createObjectURL(f)} alt="pic" className="w-full h-full object-cover opacity-80 group-hover/img:opacity-40 transition-opacity" />
+                                                                    <div className="absolute inset-0 opacity-0 group-hover/img:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1">
+                                                                        <button type="button" onClick={(e) => openCropModal(e, 'color', f, i, colorInput.id)} className="bg-slate-900/80 text-white p-1 rounded-sm hover:bg-indigo-600 transition-colors" title="Crop">
+                                                                            <Crop size={12} />
+                                                                        </button>
+                                                                        <button type="button" onClick={(e) => { e.stopPropagation(); removeNewColorImage(colorInput.id, i); }} className="bg-rose-500/90 text-white p-1 rounded-sm hover:bg-rose-500 transition-colors" title="Delete">
+                                                                            <Trash2 size={12} />
+                                                                        </button>
+                                                                    </div>
                                                                 </div>
                                                             ))}
 
@@ -281,10 +330,15 @@ export const EditProductModal = ({ isOpen, onClose, product }: EditProductModalP
                                                 <div className="flex flex-wrap gap-3 justify-center">
                                                     {imageFiles.map((f, i) => (
                                                         <div key={i} className="relative w-20 h-20 border border-slate-200 rounded overflow-hidden shadow-sm group/img">
-                                                            <img src={URL.createObjectURL(f)} className="w-full h-full object-cover opacity-80" alt="preview" />
-                                                            <button type="button" onClick={(e) => removeNewImage(e, i)} className="absolute inset-0 bg-red-500/20 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity">
-                                                                <Trash2 size={18} className="text-red-600" />
-                                                            </button>
+                                                            <img src={URL.createObjectURL(f)} className="w-full h-full object-cover opacity-80 group-hover/img:opacity-40 transition-opacity" alt="preview" />
+                                                            <div className="absolute inset-0 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                                                <button type="button" onClick={(e) => openCropModal(e, 'general', f, i)} className="bg-slate-900/80 text-white p-1.5 rounded-full hover:bg-indigo-600 transition-colors hover:scale-110 shadow-sm" title="Crop">
+                                                                    <Crop size={14} />
+                                                                </button>
+                                                                <button type="button" onClick={(e) => removeNewImage(e, i)} className="bg-rose-600/90 text-white p-1.5 rounded-full hover:bg-rose-500 transition-colors hover:scale-110 shadow-sm" title="Delete">
+                                                                    <Trash2 size={14} />
+                                                                </button>
+                                                            </div>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -327,6 +381,16 @@ export const EditProductModal = ({ isOpen, onClose, product }: EditProductModalP
                     </Dialog.Portal>
                 )}
             </AnimatePresence>
+
+            {cropModalData && cropModalData.isOpen && (
+                <ImageCropperModal
+                    isOpen={cropModalData.isOpen}
+                    imageUrl={cropModalData.imageUrl}
+                    onClose={() => setCropModalData(null)}
+                    onCropComplete={handleCropComplete}
+                    aspectRatio={0.8}
+                />
+            )}
         </Dialog.Root>
     );
 };

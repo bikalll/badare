@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../utils/supabaseClient';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Trash2, Edit2, Check, X, Image as ImageIcon, Upload, Eye } from 'lucide-react';
+import { Plus, Trash2, Edit2, Check, X, Image as ImageIcon, Upload, Eye, Crop } from 'lucide-react';
+import { ImageCropperModal } from '../../components/ImageCropperModal';
 import { uploadToCloudinary } from '../../utils/cloudinary';
 
 interface HeroSlide {
@@ -21,6 +22,28 @@ export const AdminHero = () => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
+    const [previewingImage, setPreviewingImage] = useState<string | null>(null);
+
+    const [cropModalData, setCropModalData] = useState<{
+        isOpen: boolean;
+        file: File | null;
+        imageUrl: string;
+    } | null>(null);
+
+    const handleCropComplete = (croppedFile: File) => {
+        setSelectedFile(croppedFile);
+        setPreviewUrl(URL.createObjectURL(croppedFile));
+        setCropModalData(null);
+    };
+
+    const openCropModal = (e: React.MouseEvent, file: File) => {
+        e.stopPropagation();
+        setCropModalData({
+            isOpen: true,
+            file,
+            imageUrl: URL.createObjectURL(file),
+        });
+    };
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
@@ -237,18 +260,28 @@ export const AdminHero = () => {
                                                 </span>
                                             </div>
                                             {selectedFile && (
-                                                <button
-                                                    type="button"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setSelectedFile(null);
-                                                        setPreviewUrl(editingSlide.image_url || null);
-                                                        if (fileInputRef.current) fileInputRef.current.value = '';
-                                                    }}
-                                                    className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-md hover:bg-red-600 opacity-0 group-hover/heroimg:opacity-100 transition-opacity z-10"
-                                                >
-                                                    <Trash2 size={14} />
-                                                </button>
+                                                <>
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => openCropModal(e, selectedFile)}
+                                                        className="absolute top-2 right-10 bg-indigo-600 text-white p-1.5 rounded-md hover:bg-indigo-700 opacity-0 group-hover/heroimg:opacity-100 transition-opacity z-10"
+                                                        title="Crop Image"
+                                                    >
+                                                        <Crop size={14} />
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setSelectedFile(null);
+                                                            setPreviewUrl(editingSlide.image_url || null);
+                                                            if (fileInputRef.current) fileInputRef.current.value = '';
+                                                        }}
+                                                        className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-md hover:bg-red-600 opacity-0 group-hover/heroimg:opacity-100 transition-opacity z-10"
+                                                    >
+                                                        <Trash2 size={14} />
+                                                    </button>
+                                                </>
                                             )}
                                         </div>
                                     ) : (
@@ -336,6 +369,15 @@ export const AdminHero = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            {cropModalData && cropModalData.isOpen && (
+                <ImageCropperModal
+                    isOpen={cropModalData.isOpen}
+                    imageUrl={cropModalData.imageUrl}
+                    onClose={() => setCropModalData(null)}
+                    onCropComplete={handleCropComplete}
+                />
+            )}
         </div>
     );
 };

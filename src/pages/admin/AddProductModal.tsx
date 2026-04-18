@@ -1,7 +1,8 @@
 import React, { useState, useRef } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
-import { X, Upload, Plus, Trash2 } from 'lucide-react';
+import { X, Upload, Plus, Trash2, Crop } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ImageCropperModal } from '../../components/ImageCropperModal';
 import { useProductStore } from '../../store/useProductStore';
 
 interface AddProductModalProps {
@@ -11,7 +12,7 @@ interface AddProductModalProps {
 
 export const AddProductModal = ({ isOpen, onClose }: AddProductModalProps) => {
     const { addProduct, loading, error } = useProductStore();
-    
+
     const [name, setName] = useState('');
     const [price, setPrice] = useState('');
     const [description, setDescription] = useState('');
@@ -19,16 +20,59 @@ export const AddProductModal = ({ isOpen, onClose }: AddProductModalProps) => {
     const [editorNotes, setEditorNotes] = useState('');
     const [stock, setStock] = useState('0');
     const [sizes, setSizes] = useState('');
-    
+
     interface ColorInput { id: string; hex: string; files: File[] }
     const [colorInputs, setColorInputs] = useState<ColorInput[]>([{ id: 'c1', hex: '#000000', files: [] }]);
-    
+
     const [imageFiles, setImageFiles] = useState<File[]>([]);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    const [cropModalData, setCropModalData] = useState<{
+        isOpen: boolean;
+        file: File | null;
+        imageUrl: string;
+        type: 'color' | 'general' | null;
+        colorId?: string;
+        index: number;
+    } | null>(null);
+
+    const handleCropComplete = (croppedFile: File) => {
+        if (!cropModalData) return;
+        const { type, colorId, index } = cropModalData;
+        if (type === 'color' && colorId) {
+            setColorInputs(prev => prev.map(c => {
+                if (c.id === colorId) {
+                    const newFiles = [...c.files];
+                    newFiles[index] = croppedFile;
+                    return { ...c, files: newFiles };
+                }
+                return c;
+            }));
+        } else if (type === 'general') {
+            setImageFiles(prev => {
+                const newFiles = [...prev];
+                newFiles[index] = croppedFile;
+                return newFiles;
+            });
+        }
+        setCropModalData(null);
+    };
+
+    const openCropModal = (e: React.MouseEvent, type: 'color' | 'general', file: File, index: number, colorId?: string) => {
+        e.stopPropagation();
+        setCropModalData({
+            isOpen: true,
+            file,
+            imageUrl: URL.createObjectURL(file),
+            type,
+            index,
+            colorId,
+        });
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         const colorImageMap: { [hex: string]: File[] } = {};
         const productColors: { hex: string, images: string[] }[] = [];
 
@@ -46,9 +90,9 @@ export const AddProductModal = ({ isOpen, onClose }: AddProductModalProps) => {
             description,
             category,
             images: [],
-            variants: { 
-                sizes: sizes.split(',').map(s => s.trim()).filter(Boolean), 
-                colors: productColors 
+            variants: {
+                sizes: sizes.split(',').map(s => s.trim()).filter(Boolean),
+                colors: productColors
             },
             editorNotes,
             stock: parseInt(stock) || 0,
@@ -73,8 +117,8 @@ export const AddProductModal = ({ isOpen, onClose }: AddProductModalProps) => {
 
     const handleColorFileChange = (id: string, e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
-             const filesArray = Array.from(e.target.files);
-             setColorInputs(prev => prev.map(c => c.id === id ? { ...c, files: [...c.files, ...filesArray] } : c));
+            const filesArray = Array.from(e.target.files);
+            setColorInputs(prev => prev.map(c => c.id === id ? { ...c, files: [...c.files, ...filesArray] } : c));
         }
     };
 
@@ -99,16 +143,16 @@ export const AddProductModal = ({ isOpen, onClose }: AddProductModalProps) => {
                 {isOpen && (
                     <Dialog.Portal forceMount>
                         <Dialog.Overlay asChild>
-                            <motion.div 
+                            <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100]" 
+                                className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100]"
                             />
                         </Dialog.Overlay>
-                        
+
                         <Dialog.Content asChild>
-                            <motion.div 
+                            <motion.div
                                 initial={{ opacity: 0, scale: 0.95, x: "-50%", y: "-40%" }}
                                 animate={{ opacity: 1, scale: 1, x: "-50%", y: "-50%" }}
                                 exit={{ opacity: 0, scale: 0.95, x: "-50%", y: "-40%" }}
@@ -137,12 +181,12 @@ export const AddProductModal = ({ isOpen, onClose }: AddProductModalProps) => {
                                             <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Product Name</label>
                                             <input required value={name} onChange={e => setName(e.target.value)} type="text" placeholder="e.g. Classic T-Shirt" className="w-full border border-slate-300 rounded-lg p-2.5 text-sm font-medium text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all shadow-sm" />
                                         </div>
-                                        
+
                                         <div className="flex flex-col gap-1.5">
                                             <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Price (NPR)</label>
                                             <input required value={price} onChange={e => setPrice(e.target.value)} type="number" placeholder="0.00" className="w-full border border-slate-300 rounded-lg p-2.5 text-sm font-medium text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all shadow-sm" />
                                         </div>
-                                        
+
                                         <div className="flex flex-col gap-1.5">
                                             <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Stock Count</label>
                                             <input required value={stock} onChange={e => setStock(e.target.value)} type="number" placeholder="0" className="w-full border border-slate-300 rounded-lg p-2.5 text-sm font-medium text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all shadow-sm" />
@@ -153,12 +197,12 @@ export const AddProductModal = ({ isOpen, onClose }: AddProductModalProps) => {
                                         <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Description</label>
                                         <textarea required value={description} onChange={e => setDescription(e.target.value)} placeholder="Enter details..." rows={4} className="w-full border border-slate-300 rounded-lg p-2.5 text-sm text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all shadow-sm resize-none"></textarea>
                                     </div>
-                                    
+
                                     <div className="flex flex-col gap-1.5">
                                         <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Editor's Notes (Optional)</label>
                                         <textarea value={editorNotes} onChange={e => setEditorNotes(e.target.value)} placeholder="Curator's insight..." rows={3} className="w-full border border-slate-300 rounded-lg p-2.5 text-sm text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all shadow-sm resize-none"></textarea>
                                     </div>
-                                    
+
                                     <div className="flex flex-col gap-1.5">
                                         <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Category</label>
                                         <select value={category} onChange={e => setCategory(e.target.value)} className="w-full border border-slate-300 rounded-lg p-2.5 text-sm font-medium text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all shadow-sm cursor-pointer bg-white">
@@ -186,13 +230,13 @@ export const AddProductModal = ({ isOpen, onClose }: AddProductModalProps) => {
                                         <div className="flex flex-col gap-3">
                                             {colorInputs.map((colorInput) => (
                                                 <div key={colorInput.id} className="flex flex-col sm:flex-row gap-3 items-start sm:items-center bg-white p-3 rounded-lg border border-slate-200 shadow-sm relative group">
-                                                    
+
                                                     <div className="flex items-center gap-3">
                                                         <div className="flex flex-col gap-1 text-center items-center justify-center">
                                                             <div className="w-10 h-10 rounded-full border-2 border-slate-200 overflow-hidden shadow-inner flex-shrink-0 relative cursor-pointer group/color">
-                                                                <input 
-                                                                    type="color" 
-                                                                    value={colorInput.hex} 
+                                                                <input
+                                                                    type="color"
+                                                                    value={colorInput.hex}
                                                                     onChange={e => setColorInputs(prev => prev.map(c => c.id === colorInput.id ? { ...c, hex: e.target.value } : c))}
                                                                     className="absolute pl-[10px] pr-[10px] -inset-6 w-24 h-24 cursor-pointer opacity-0"
                                                                 />
@@ -207,20 +251,25 @@ export const AddProductModal = ({ isOpen, onClose }: AddProductModalProps) => {
                                                         <div className="flex flex-wrap gap-2 items-center">
                                                             {colorInput.files.map((f, i) => (
                                                                 <div key={i} className="relative w-12 h-12 rounded border border-slate-200 overflow-hidden shadow-sm group/img">
-                                                                    <img src={URL.createObjectURL(f)} alt="pic" className="w-full h-full object-cover opacity-80" />
-                                                                    <button type="button" onClick={() => removeNewColorImage(colorInput.id, i)} className="absolute inset-0 bg-red-500/20 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity">
-                                                                        <Trash2 size={14} className="text-red-600" />
-                                                                    </button>
+                                                                    <img src={URL.createObjectURL(f)} alt="pic" className="w-full h-full object-cover opacity-80 group-hover/img:opacity-40 transition-opacity" />
+                                                                    <div className="absolute inset-0 opacity-0 group-hover/img:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1">
+                                                                        <button type="button" onClick={(e) => openCropModal(e, 'color', f, i, colorInput.id)} className="bg-slate-900/80 text-white p-1 rounded-sm hover:bg-indigo-600 transition-colors" title="Crop">
+                                                                            <Crop size={12} />
+                                                                        </button>
+                                                                        <button type="button" onClick={(e) => { e.stopPropagation(); removeNewColorImage(colorInput.id, i); }} className="bg-rose-500/90 text-white p-1 rounded-sm hover:bg-rose-500 transition-colors" title="Delete">
+                                                                            <Trash2 size={12} />
+                                                                        </button>
+                                                                    </div>
                                                                 </div>
                                                             ))}
-                                                            
+
                                                             <label className="w-12 h-12 rounded border border-dashed border-slate-300 flex items-center justify-center text-slate-400 hover:text-indigo-500 hover:border-indigo-400 hover:bg-slate-50 cursor-pointer transition-colors">
                                                                 <Plus size={18} />
                                                                 <input type="file" multiple accept="image/*" className="hidden" onChange={e => handleColorFileChange(colorInput.id, e)} />
                                                             </label>
                                                         </div>
                                                     </div>
-                                                    
+
                                                     {colorInputs.length > 1 && (
                                                         <button type="button" onClick={() => setColorInputs(prev => prev.filter(c => c.id !== colorInput.id))} className="text-slate-400 hover:text-red-500 transition-colors p-2 absolute right-1 top-1 sm:relative sm:right-auto sm:top-auto opacity-0 group-hover:opacity-100 focus:opacity-100">
                                                             <Trash2 size={16} />
@@ -235,27 +284,32 @@ export const AddProductModal = ({ isOpen, onClose }: AddProductModalProps) => {
                                         <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-2">General Product Visuals (Fallback)</label>
                                         <div
                                             className="border-2 border-slate-300 border-dashed rounded-lg p-8 flex flex-col items-center justify-center bg-slate-50 group hover:bg-indigo-50 hover:border-indigo-300 transition-colors cursor-pointer mt-2"
-                                        onClick={() => fileInputRef.current?.click()}
-                                    >
-                                        <input type="file" multiple ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
-                                        {imageFiles.length > 0 ? (
-                                            <div className="flex flex-wrap gap-3 justify-center">
-                                                {imageFiles.map((f, i) => (
-                                                    <div key={i} className="relative w-20 h-20 border border-slate-200 rounded overflow-hidden shadow-sm group/img">
-                                                        <img src={URL.createObjectURL(f)} className="w-full h-full object-cover opacity-80" alt="preview" />
-                                                        <button type="button" onClick={(e) => removeNewImage(e, i)} className="absolute inset-0 bg-red-500/20 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity">
-                                                            <Trash2 size={18} className="text-red-600" />
-                                                        </button>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        ) : (
-                                            <>
-                                                <Upload className="w-8 h-8 mb-3 text-slate-400 group-hover:text-indigo-500 transition-colors" />
-                                                <p className="text-sm font-medium text-slate-500 group-hover:text-indigo-600">Drop visuals here or click to browse</p>
-                                            </>
-                                        )}
-                                    </div>
+                                            onClick={() => fileInputRef.current?.click()}
+                                        >
+                                            <input type="file" multiple ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
+                                            {imageFiles.length > 0 ? (
+                                                <div className="flex flex-wrap gap-3 justify-center">
+                                                    {imageFiles.map((f, i) => (
+                                                        <div key={i} className="relative w-20 h-20 border border-slate-200 rounded overflow-hidden shadow-sm group/img">
+                                                            <img src={URL.createObjectURL(f)} className="w-full h-full object-cover opacity-80 group-hover/img:opacity-40 transition-opacity" alt="preview" />
+                                                            <div className="absolute inset-0 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                                                <button type="button" onClick={(e) => openCropModal(e, 'general', f, i)} className="bg-slate-900/80 text-white p-1.5 rounded-full hover:bg-indigo-600 transition-colors hover:scale-110 shadow-sm" title="Crop">
+                                                                    <Crop size={14} />
+                                                                </button>
+                                                                <button type="button" onClick={(e) => removeNewImage(e, i)} className="bg-rose-600/90 text-white p-1.5 rounded-full hover:bg-rose-500 transition-colors hover:scale-110 shadow-sm" title="Delete">
+                                                                    <Trash2 size={14} />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <Upload className="w-8 h-8 mb-3 text-slate-400 group-hover:text-indigo-500 transition-colors" />
+                                                    <p className="text-sm font-medium text-slate-500 group-hover:text-indigo-600">Drop visuals here or click to browse</p>
+                                                </>
+                                            )}
+                                        </div>
                                     </div>
 
                                     <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100">
@@ -274,6 +328,16 @@ export const AddProductModal = ({ isOpen, onClose }: AddProductModalProps) => {
                     </Dialog.Portal>
                 )}
             </AnimatePresence>
+
+            {cropModalData && cropModalData.isOpen && (
+                <ImageCropperModal
+                    isOpen={cropModalData.isOpen}
+                    imageUrl={cropModalData.imageUrl}
+                    onClose={() => setCropModalData(null)}
+                    onCropComplete={handleCropComplete}
+                    aspectRatio={0.8}
+                />
+            )}
         </Dialog.Root>
     );
 };
