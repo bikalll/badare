@@ -22,7 +22,7 @@ export const AdminHero = () => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
-    const [previewingImage, setPreviewingImage] = useState<string | null>(null);
+
 
     const [cropModalData, setCropModalData] = useState<{
         isOpen: boolean;
