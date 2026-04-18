@@ -84,6 +84,15 @@ export const AddProductModal = ({ isOpen, onClose }: AddProductModalProps) => {
         }
     };
 
+    const removeNewColorImage = (colorId: string, idx: number) => {
+        setColorInputs(prev => prev.map(c => c.id === colorId ? { ...c, files: c.files.filter((_, i) => i !== idx) } : c));
+    };
+
+    const removeNewImage = (e: React.MouseEvent, idx: number) => {
+        e.stopPropagation();
+        setImageFiles(prev => prev.filter((_, i) => i !== idx));
+    };
+
     return (
         <Dialog.Root open={isOpen} onOpenChange={onClose}>
             <AnimatePresence>
@@ -197,8 +206,11 @@ export const AddProductModal = ({ isOpen, onClose }: AddProductModalProps) => {
                                                         <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-2 block">Upload Swatch/Color Images</label>
                                                         <div className="flex flex-wrap gap-2 items-center">
                                                             {colorInput.files.map((f, i) => (
-                                                                <div key={i} className="relative w-12 h-12 rounded border border-slate-200 overflow-hidden shadow-sm">
-                                                                    <img src={URL.createObjectURL(f)} alt="pic" className="w-full h-full object-cover" />
+                                                                <div key={i} className="relative w-12 h-12 rounded border border-slate-200 overflow-hidden shadow-sm group/img">
+                                                                    <img src={URL.createObjectURL(f)} alt="pic" className="w-full h-full object-cover opacity-80" />
+                                                                    <button type="button" onClick={() => removeNewColorImage(colorInput.id, i)} className="absolute inset-0 bg-red-500/20 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity">
+                                                                        <Trash2 size={14} className="text-red-600" />
+                                                                    </button>
                                                                 </div>
                                                             ))}
                                                             
@@ -227,10 +239,13 @@ export const AddProductModal = ({ isOpen, onClose }: AddProductModalProps) => {
                                     >
                                         <input type="file" multiple ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
                                         {imageFiles.length > 0 ? (
-                                            <div className="flex flex-wrap gap-3 justify-center pointer-events-none">
+                                            <div className="flex flex-wrap gap-3 justify-center">
                                                 {imageFiles.map((f, i) => (
-                                                    <div key={i} className="relative w-20 h-20 border border-slate-200 rounded overflow-hidden shadow-sm">
-                                                        <img src={URL.createObjectURL(f)} className="w-full h-full object-cover" alt="preview" />
+                                                    <div key={i} className="relative w-20 h-20 border border-slate-200 rounded overflow-hidden shadow-sm group/img">
+                                                        <img src={URL.createObjectURL(f)} className="w-full h-full object-cover opacity-80" alt="preview" />
+                                                        <button type="button" onClick={(e) => removeNewImage(e, i)} className="absolute inset-0 bg-red-500/20 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity">
+                                                            <Trash2 size={18} className="text-red-600" />
+                                                        </button>
                                                     </div>
                                                 ))}
                                             </div>

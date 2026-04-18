@@ -31,7 +31,7 @@ export const AdminHero = () => {
             .from('hero_slides')
             .select('*')
             .order('sort_order', { ascending: true });
-        
+
         if (error) {
             console.error("Error fetching hero slides:", error);
         } else {
@@ -42,7 +42,7 @@ export const AdminHero = () => {
 
     const handleDelete = async (id: string) => {
         if (!window.confirm("Are you sure you want to delete this slide?")) return;
-        
+
         const { error } = await supabase.from('hero_slides').delete().eq('id', id);
         if (error) {
             alert("Error deleting slide");
@@ -169,7 +169,7 @@ export const AdminHero = () => {
             {/* Edit / Create Modal */}
             {editingSlide && (
                 <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         className="bg-white rounded-xl shadow-2xl max-w-lg w-full overflow-hidden"
@@ -183,44 +183,58 @@ export const AdminHero = () => {
                         <div className="p-6 space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">Primary Title (e.g. "BE")</label>
-                                <input 
-                                    type="text" 
+                                <input
+                                    type="text"
                                     className="w-full border border-slate-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none uppercase font-bold"
                                     value={editingSlide.title || ''}
-                                    onChange={e => setEditingSlide({...editingSlide, title: e.target.value.toUpperCase()})}
+                                    onChange={e => setEditingSlide({ ...editingSlide, title: e.target.value.toUpperCase() })}
                                 />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">Italic Text (e.g. "YOU.")</label>
-                                <input 
-                                    type="text" 
+                                <input
+                                    type="text"
                                     className="w-full border border-slate-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none uppercase italic"
                                     value={editingSlide.italic_text || ''}
-                                    onChange={e => setEditingSlide({...editingSlide, italic_text: e.target.value.toUpperCase()})}
+                                    onChange={e => setEditingSlide({ ...editingSlide, italic_text: e.target.value.toUpperCase() })}
                                 />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">Description Copy</label>
-                                <textarea 
+                                <textarea
                                     className="w-full border border-slate-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none min-h-[100px]"
                                     value={editingSlide.description || ''}
-                                    onChange={e => setEditingSlide({...editingSlide, description: e.target.value})}
+                                    onChange={e => setEditingSlide({ ...editingSlide, description: e.target.value })}
                                 />
                             </div>
                             <div>
                                 <label className="block text-sm font-semibold text-slate-700 mb-2 uppercase tracking-wide">Hero Image</label>
-                                <div 
+                                <div
                                     className="border-2 border-dashed border-slate-300 rounded-xl p-4 text-center cursor-pointer hover:bg-slate-50 transition-colors relative mb-3"
                                     onClick={() => fileInputRef.current?.click()}
                                 >
                                     {previewUrl ? (
-                                        <div className="relative h-32 w-full mx-auto overflow-hidden rounded-lg shadow-sm">
+                                        <div className="relative h-32 w-full mx-auto overflow-hidden rounded-lg shadow-sm group/heroimg">
                                             <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
-                                            <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/heroimg:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
                                                 <span className="text-white text-xs font-semibold uppercase tracking-wider flex items-center gap-2">
                                                     <Upload size={14} /> Replace
                                                 </span>
                                             </div>
+                                            {selectedFile && (
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setSelectedFile(null);
+                                                        setPreviewUrl(editingSlide.image_url || null);
+                                                        if (fileInputRef.current) fileInputRef.current.value = '';
+                                                    }}
+                                                    className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-md hover:bg-red-600 opacity-0 group-hover/heroimg:opacity-100 transition-opacity z-10"
+                                                >
+                                                    <Trash2 size={14} />
+                                                </button>
+                                            )}
                                         </div>
                                     ) : (
                                         <div className="py-4">
@@ -229,48 +243,48 @@ export const AdminHero = () => {
                                             <p className="text-xs text-slate-400 mt-1">Saves directly to Cloudinary</p>
                                         </div>
                                     )}
-                                    <input 
-                                        type="file" 
-                                        ref={fileInputRef} 
-                                        onChange={handleFileChange} 
-                                        accept="image/*" 
-                                        className="hidden" 
+                                    <input
+                                        type="file"
+                                        ref={fileInputRef}
+                                        onChange={handleFileChange}
+                                        accept="image/*"
+                                        className="hidden"
                                     />
                                 </div>
-                                
+
                                 <div className="flex items-center gap-2 mb-3">
                                     <span className="h-px bg-slate-200 flex-1"></span>
                                     <span className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Or use URL</span>
                                     <span className="h-px bg-slate-200 flex-1"></span>
                                 </div>
 
-                                <input 
-                                    type="url" 
+                                <input
+                                    type="url"
                                     className="w-full border border-slate-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none text-sm disabled:opacity-50 disabled:bg-slate-50"
                                     value={editingSlide.image_url || ''}
-                                    onChange={e => setEditingSlide({...editingSlide, image_url: e.target.value})}
+                                    onChange={e => setEditingSlide({ ...editingSlide, image_url: e.target.value })}
                                     placeholder="https://images.unsplash.com/..."
                                     disabled={!!selectedFile}
                                 />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">Sort Order</label>
-                                <input 
-                                    type="number" 
+                                <input
+                                    type="number"
                                     className="w-full border border-slate-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
                                     value={editingSlide.sort_order || 0}
-                                    onChange={e => setEditingSlide({...editingSlide, sort_order: parseInt(e.target.value) || 0})}
+                                    onChange={e => setEditingSlide({ ...editingSlide, sort_order: parseInt(e.target.value) || 0 })}
                                 />
                             </div>
                         </div>
                         <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
-                            <button 
+                            <button
                                 onClick={() => setEditingSlide(null)}
                                 className="px-4 py-2 text-slate-600 font-medium hover:bg-slate-200 rounded-lg transition"
                             >
                                 Cancel
                             </button>
-                            <button 
+                            <button
                                 onClick={handleSave}
                                 disabled={isSaving}
                                 className="flex items-center gap-2 bg-indigo-600 text-white px-6 py-2 font-medium rounded-lg hover:bg-indigo-700 transition disabled:opacity-50"
