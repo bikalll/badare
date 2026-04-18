@@ -216,7 +216,7 @@ export const Home = () => {
                                 transition={{ duration: 1.5, ease: "easeInOut" }}
                                 src={heroSlides[sliderIndex].img}
                                 alt="Collection showcase"
-                                className="absolute inset-0 w-full h-full object-cover grayscale opacity-90 object-[center_top]"
+                                className="absolute inset-0 w-full h-full object-cover opacity-90 object-[center_top]"
                             />
                         </AnimatePresence>
                     </motion.div>
