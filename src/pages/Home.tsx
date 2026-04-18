@@ -40,7 +40,7 @@ export const Home = () => {
                 .from('hero_slides')
                 .select('*')
                 .order('sort_order', { ascending: true });
-            
+
             if (!heroError && heroData && heroData.length > 0) {
                 setHeroSlides(heroData.map((d: any) => ({
                     title: d.title,
@@ -72,33 +72,33 @@ export const Home = () => {
 
             const imagePool: Record<string, string[]> = {
                 'Apparel': [
-                    'https://images.unsplash.com/photo-1434389678369-182cb207c427?auto=format&fit=crop&q=80&w=2000', 
-                    'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=2000', 
-                    'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=2000', 
-                    'https://images.unsplash.com/photo-1550614000-4b95d466f272?auto=format&fit=crop&q=80&w=2000', 
-                    'https://images.unsplash.com/photo-1574180564177-3e110ef90a1e?auto=format&fit=crop&q=80&w=2000' 
+                    'https://images.unsplash.com/photo-1434389678369-182cb207c427?auto=format&fit=crop&q=80&w=2000',
+                    'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=2000',
+                    'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=2000',
+                    'https://images.unsplash.com/photo-1550614000-4b95d466f272?auto=format&fit=crop&q=80&w=2000',
+                    'https://images.unsplash.com/photo-1574180564177-3e110ef90a1e?auto=format&fit=crop&q=80&w=2000'
                 ],
                 'Outerwear': [
-                    'https://images.unsplash.com/photo-1539533113208-f6df8cc8b543?auto=format&fit=crop&q=80&w=2000', 
-                    'https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&q=80&w=2000' 
+                    'https://images.unsplash.com/photo-1539533113208-f6df8cc8b543?auto=format&fit=crop&q=80&w=2000',
+                    'https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&q=80&w=2000'
                 ],
                 'Accessories': [
-                    'https://images.unsplash.com/photo-1523206489230-c012c64b2b48?auto=format&fit=crop&q=80&w=2000', 
-                    'https://images.unsplash.com/photo-1611078704689-f53e680e9803?auto=format&fit=crop&q=80&w=2000', 
-                    'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?auto=format&fit=crop&q=80&w=2000' 
+                    'https://images.unsplash.com/photo-1523206489230-c012c64b2b48?auto=format&fit=crop&q=80&w=2000',
+                    'https://images.unsplash.com/photo-1611078704689-f53e680e9803?auto=format&fit=crop&q=80&w=2000',
+                    'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?auto=format&fit=crop&q=80&w=2000'
                 ],
                 'Footwear': [
-                    'https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&q=80&w=2000', 
+                    'https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&q=80&w=2000',
                     'https://images.unsplash.com/photo-1620809228913-c971eb0ebd0e?auto=format&fit=crop&q=80&w=2000'
                 ]
             };
 
             for (let p of products) {
                 const categoryPool = imagePool[p.category] || imagePool['Apparel'];
-                
+
                 let charCodeSum = 0;
                 for (let j = 0; j < p.id.length; j++) charCodeSum += p.id.charCodeAt(j);
-                
+
                 const img1 = categoryPool[charCodeSum % categoryPool.length];
                 const img2 = categoryPool[(charCodeSum + 1) % categoryPool.length];
 
@@ -106,7 +106,7 @@ export const Home = () => {
                     .from('products')
                     .update({ images: [img1, img2] })
                     .eq('id', p.id);
-                
+
                 if (updateError) console.error("Error updating image for", p.name, updateError);
             }
             console.log("Images completely updated to Unsplash Luxury! Refresh the page to see them.");
@@ -114,7 +114,7 @@ export const Home = () => {
 
         upgradeImages();
     }, [products]);
-    
+
     const y1 = useTransform(scrollY, [0, 1000], [0, 300]);
 
     const [newsletterEmail, setNewsletterEmail] = useState('');
@@ -124,7 +124,7 @@ export const Home = () => {
         e.preventDefault();
         if (!newsletterEmail) return;
         setNewsletterStatus('submitting');
-        
+
         const { error } = await supabase.from('subscribers').insert([{ email: newsletterEmail }]);
         if (error) {
             console.error("Newsletter error", error);
@@ -144,7 +144,7 @@ export const Home = () => {
         hidden: { opacity: 0 },
         show: { opacity: 1, transition: { staggerChildren: 0.15 } }
     };
-    
+
     const fadeInUp = {
         hidden: { opacity: 0, y: 30 },
         show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.21, 0.47, 0.32, 0.98] } }
@@ -167,9 +167,9 @@ export const Home = () => {
                         >
                             <span className="block text-[10px] md:text-xs text-black/40 tracking-[0.4em] uppercase font-semibold">The New Standard</span>
                         </motion.div>
-                        
+
                         <AnimatePresence mode="wait">
-                            <motion.h1 
+                            <motion.h1
                                 key={`title-${sliderIndex}`}
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -228,7 +228,7 @@ export const Home = () => {
                         </span>
                         <div className="flex gap-2">
                             {heroSlides.map((_, idx) => (
-                                <button 
+                                <button
                                     key={`btn-${idx}`}
                                     onClick={() => setSliderIndex(idx)}
                                     className={`w-8 h-px transition-all duration-300 ${idx === sliderIndex ? 'bg-black' : 'bg-black/20 hover:bg-black/40'}`}
@@ -242,7 +242,7 @@ export const Home = () => {
 
             {/* New Arrivals - Staggered Grid */}
             <section className="py-16 md:py-24 px-6 max-w-[90rem] mx-auto mb-20">
-                <motion.div 
+                <motion.div
                     initial="hidden"
                     whileInView="show"
                     viewport={{ once: true, margin: "-100px" }}
@@ -260,7 +260,7 @@ export const Home = () => {
                 {loading ? (
                     <div className="w-full py-24 text-center text-gray-400 font-light tracking-widest uppercase">Curating collection...</div>
                 ) : (
-                    <motion.div 
+                    <motion.div
                         initial="hidden"
                         whileInView="show"
                         viewport={{ once: true, margin: "-100px" }}
@@ -289,8 +289,8 @@ export const Home = () => {
                         alt="Editorial"
                     />
                 </div>
-                
-                <motion.div 
+
+                <motion.div
                     initial={{ opacity: 0, x: 50 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     transition={{ duration: 1, ease: "easeOut" }}
@@ -313,7 +313,7 @@ export const Home = () => {
 
             {/* Trending */}
             <section className="py-24 px-6 max-w-[90rem] mx-auto mb-24">
-                <motion.div 
+                <motion.div
                     initial="hidden"
                     whileInView="show"
                     viewport={{ once: true, margin: "-100px" }}
@@ -331,14 +331,14 @@ export const Home = () => {
                 </motion.div>
 
                 {trending.length === 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12 opacity-50">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
                         {/* Fallback to normal products if no editorial cards are set up yet */}
                         {products.slice(0, 3).map((product) => (
                             <ProductCard key={product.id} product={product as any} />
                         ))}
                     </div>
                 ) : (
-                    <motion.div 
+                    <motion.div
                         initial="hidden"
                         whileInView="show"
                         viewport={{ once: true, margin: "-100px" }}
@@ -346,13 +346,13 @@ export const Home = () => {
                         className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8"
                     >
                         {trending.slice(0, 4).map((product) => (
-                            <motion.div 
-                                variants={fadeInUp} 
-                                key={product.id} 
+                            <motion.div
+                                variants={fadeInUp}
+                                key={product.id}
                                 className="group relative w-full h-[500px] lg:h-[600px] overflow-hidden bg-gray-100 flex flex-col justify-end p-8"
                             >
                                 <img src={product.images[0] || ''} alt={product.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 ease-out" />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500"></div>
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-500"></div>
                                 <div className="relative z-10 text-white">
                                     <span className="text-[10px] uppercase font-bold tracking-[0.3em] opacity-80 mb-2 block">{product.category}</span>
                                     <h3 className="text-3xl font-display mb-4">{product.name}</h3>

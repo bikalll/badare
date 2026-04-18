@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../utils/supabaseClient';
-import { motion } from 'framer-motion';
-import { Plus, Trash2, Edit2, Check, X, Image as ImageIcon, Upload } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Plus, Trash2, Edit2, Check, X, Image as ImageIcon, Upload, Eye } from 'lucide-react';
 import { uploadToCloudinary } from '../../utils/cloudinary';
 
 interface HeroSlide {
@@ -20,6 +20,7 @@ export const AdminHero = () => {
     const [isSaving, setIsSaving] = useState(false);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [previewImage, setPreviewImage] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
@@ -125,22 +126,36 @@ export const AdminHero = () => {
             </div>
 
             {loading ? (
-                <div className="text-slate-500">Loading slides...</div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[1, 2, 3].map(i => (
+                        <div key={i} className="bg-white rounded-xl border border-slate-200 overflow-hidden animate-pulse">
+                            <div className="h-48 bg-slate-200"></div>
+                            <div className="p-5 space-y-3">
+                                <div className="h-6 bg-slate-200 rounded w-3/4"></div>
+                                <div className="h-4 bg-slate-200 rounded w-full"></div>
+                                <div className="h-4 bg-slate-200 rounded w-5/6"></div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {slides.map(slide => (
-                        <motion.div key={slide.id} layout className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                            <div className="h-48 bg-slate-100 relative group">
-                                <img src={slide.image_url} alt={slide.title} className="w-full h-full object-cover" />
-                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+                        <motion.div key={slide.id} layout className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden group/card relative">
+                            <div className="h-48 bg-slate-100 relative overflow-hidden">
+                                <img src={slide.image_url} alt={slide.title} className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700 ease-in-out" />
+                                <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover/card:opacity-100 transition-all duration-300 flex items-center justify-center gap-3 backdrop-blur-[2px]">
+                                    <button onClick={() => setPreviewImage(slide.image_url)} className="bg-white text-indigo-600 p-2.5 rounded-full hover:bg-indigo-50 hover:scale-110 transition-all shadow-xl" title="Preview Full Image">
+                                        <Eye size={16} />
+                                    </button>
                                     <button onClick={() => {
                                         setEditingSlide(slide);
                                         setSelectedFile(null);
                                         setPreviewUrl(slide.image_url);
-                                    }} className="bg-white text-slate-900 p-2 rounded-full hover:bg-indigo-50 transition">
+                                    }} className="bg-white text-slate-900 p-2.5 rounded-full hover:bg-slate-50 hover:scale-110 transition-all shadow-xl" title="Edit Slide">
                                         <Edit2 size={16} />
                                     </button>
-                                    <button onClick={() => handleDelete(slide.id)} className="bg-white text-red-600 p-2 rounded-full hover:bg-red-50 transition">
+                                    <button onClick={() => handleDelete(slide.id)} className="bg-white text-rose-600 p-2.5 rounded-full hover:bg-rose-50 hover:scale-110 transition-all shadow-xl" title="Delete Slide">
                                         <Trash2 size={16} />
                                     </button>
                                 </div>
@@ -295,6 +310,32 @@ export const AdminHero = () => {
                     </motion.div>
                 </div>
             )}
+
+            {/* Fullscreen Image Preview */}
+            <AnimatePresence>
+                {previewImage && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] bg-slate-900/95 flex items-center justify-center p-4 backdrop-blur-sm"
+                        onClick={() => setPreviewImage(null)}
+                    >
+                        <button className="absolute top-6 right-6 text-white/50 hover:text-white hover:scale-110 transition-all bg-white/10 p-2 rounded-full" onClick={() => setPreviewImage(null)}>
+                            <X size={24} />
+                        </button>
+                        <motion.img
+                            initial={{ scale: 0.95 }}
+                            animate={{ scale: 1 }}
+                            exit={{ scale: 0.95 }}
+                            src={previewImage}
+                            className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)]"
+                            alt="Preview Fullscreen"
+                            onClick={e => e.stopPropagation()}
+                        />
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };
