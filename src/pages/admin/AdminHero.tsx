@@ -36,13 +36,21 @@ export const AdminHero = () => {
         setCropModalData(null);
     };
 
-    const openCropModal = (e: React.MouseEvent, file: File) => {
+    const openCropModal = (e: React.MouseEvent, fileOrUrl: File | string) => {
         e.stopPropagation();
-        setCropModalData({
-            isOpen: true,
-            file,
-            imageUrl: URL.createObjectURL(file),
-        });
+        if (typeof fileOrUrl === 'string') {
+            setCropModalData({
+                isOpen: true,
+                file: null,
+                imageUrl: fileOrUrl,
+            });
+        } else {
+            setCropModalData({
+                isOpen: true,
+                file: fileOrUrl,
+                imageUrl: URL.createObjectURL(fileOrUrl),
+            });
+        }
     };
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -259,29 +267,27 @@ export const AdminHero = () => {
                                                     <Upload size={14} /> Replace
                                                 </span>
                                             </div>
+                                            <button
+                                                type="button"
+                                                onClick={(e) => openCropModal(e, selectedFile || previewUrl)}
+                                                className={`absolute top-2 ${selectedFile ? 'right-10' : 'right-2'} bg-indigo-600 text-white p-1.5 rounded-md hover:bg-indigo-700 opacity-0 group-hover/heroimg:opacity-100 transition-opacity z-10 pointer-events-auto`}
+                                                title="Crop Image"
+                                            >
+                                                <Crop size={14} />
+                                            </button>
                                             {selectedFile && (
-                                                <>
-                                                    <button
-                                                        type="button"
-                                                        onClick={(e) => openCropModal(e, selectedFile)}
-                                                        className="absolute top-2 right-10 bg-indigo-600 text-white p-1.5 rounded-md hover:bg-indigo-700 opacity-0 group-hover/heroimg:opacity-100 transition-opacity z-10"
-                                                        title="Crop Image"
-                                                    >
-                                                        <Crop size={14} />
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            setSelectedFile(null);
-                                                            setPreviewUrl(editingSlide.image_url || null);
-                                                            if (fileInputRef.current) fileInputRef.current.value = '';
-                                                        }}
-                                                        className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-md hover:bg-red-600 opacity-0 group-hover/heroimg:opacity-100 transition-opacity z-10"
-                                                    >
-                                                        <Trash2 size={14} />
-                                                    </button>
-                                                </>
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setSelectedFile(null);
+                                                        setPreviewUrl(editingSlide.image_url || null);
+                                                        if (fileInputRef.current) fileInputRef.current.value = '';
+                                                    }}
+                                                    className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-md hover:bg-red-600 opacity-0 group-hover/heroimg:opacity-100 transition-opacity z-10 pointer-events-auto"
+                                                >
+                                                    <Trash2 size={14} />
+                                                </button>
                                             )}
                                         </div>
                                     ) : (
