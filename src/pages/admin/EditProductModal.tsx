@@ -21,6 +21,8 @@ export const EditProductModal = ({ isOpen, onClose, product }: EditProductModalP
     const [editorNotes, setEditorNotes] = useState('');
     const [stock, setStock] = useState('0');
     const [sizes, setSizes] = useState('');
+    interface TypeColorInput { id: string; hex: string; files: File[]; existingImages: string[] }
+    const [productTypes, setProductTypes] = useState<{ id: string; name: string; price: string; files: File[]; existingImages: string[]; colors: TypeColorInput[] }[]>([]);
 
     interface ColorInput { id: string; hex: string; files: File[]; existingImages: string[] }
     const [colorInputs, setColorInputs] = useState<ColorInput[]>([{ id: 'c1', hex: '#000000', files: [], existingImages: [] }]);
@@ -33,14 +35,15 @@ export const EditProductModal = ({ isOpen, onClose, product }: EditProductModalP
         isOpen: boolean;
         file: File | null;
         imageUrl: string;
-        type: 'color' | 'general' | 'existing-color' | 'existing-general' | null;
+        type: 'color' | 'general' | 'existing-color' | 'existing-general' | 'type' | 'existing-type' | 'type-color' | 'existing-type-color' | null;
         colorId?: string;
+        typeId?: string;
         index: number;
     } | null>(null);
 
     const handleCropComplete = (croppedFile: File) => {
         if (!cropModalData) return;
-        const { type, colorId, index } = cropModalData;
+        const { type, colorId, index, typeId } = cropModalData;
         if (type === 'color' && colorId) {
             setColorInputs(prev => prev.map(c => {
                 if (c.id === colorId) {
@@ -58,6 +61,44 @@ export const EditProductModal = ({ isOpen, onClose, product }: EditProductModalP
                 }
                 return c;
             }));
+        } else if (type === 'type' && colorId) {
+            setProductTypes(prev => prev.map(t => {
+                if (t.id === colorId) {
+                    const newFiles = [...t.files];
+                    newFiles[index] = croppedFile;
+                    return { ...t, files: newFiles };
+                }
+                return t;
+            }));
+        } else if (type === 'existing-type' && colorId) {
+            setProductTypes(prev => prev.map(t => {
+                if (t.id === colorId) {
+                    const newExisting = t.existingImages.filter((_, i) => i !== index);
+                    return { ...t, existingImages: newExisting, files: [...t.files, croppedFile] };
+                }
+                return t;
+            }));
+        } else if (type === 'type-color' && typeId && colorId) {
+            setProductTypes(prev => prev.map(t => {
+                if (t.id === typeId) {
+                    return { ...t, colors: t.colors.map(c => c.id === colorId ? { ...c, files: Object.assign([...c.files], { [index]: croppedFile }) } : c) };
+                }
+                return t;
+            }));
+        } else if (type === 'existing-type-color' && typeId && colorId) {
+            setProductTypes(prev => prev.map(t => {
+                if (t.id === typeId) {
+                    return {
+                        ...t, colors: t.colors.map(c => {
+                            if (c.id === colorId) {
+                                return { ...c, existingImages: c.existingImages.filter((_, i) => i !== index), files: [...c.files, croppedFile] };
+                            }
+                            return c;
+                        })
+                    };
+                }
+                return t;
+            }));
         } else if (type === 'general') {
             setImageFiles(prev => {
                 const newFiles = [...prev];
@@ -71,7 +112,7 @@ export const EditProductModal = ({ isOpen, onClose, product }: EditProductModalP
         setCropModalData(null);
     };
 
-    const openCropModal = (e: React.MouseEvent, type: 'color' | 'general', file: File, index: number, colorId?: string) => {
+    const openCropModal = (e: React.MouseEvent, type: 'color' | 'general' | 'type' | 'type-color', file: File, index: number, colorId?: string, typeId?: string) => {
         e.stopPropagation();
         setCropModalData({
             isOpen: true,
@@ -80,10 +121,11 @@ export const EditProductModal = ({ isOpen, onClose, product }: EditProductModalP
             type,
             index,
             colorId,
+            typeId,
         });
     };
 
-    const openCropModalForExisting = (e: React.MouseEvent, type: 'existing-color' | 'existing-general', imageUrl: string, index: number, colorId?: string) => {
+    const openCropModalForExisting = (e: React.MouseEvent, type: 'existing-color' | 'existing-general' | 'existing-type' | 'existing-type-color', imageUrl: string, index: number, colorId?: string, typeId?: string) => {
         e.stopPropagation();
         setCropModalData({
             isOpen: true,
@@ -92,6 +134,7 @@ export const EditProductModal = ({ isOpen, onClose, product }: EditProductModalP
             type,
             index,
             colorId,
+            typeId,
         });
     };
 
@@ -104,6 +147,19 @@ export const EditProductModal = ({ isOpen, onClose, product }: EditProductModalP
             setStock(product.stock !== undefined ? String(product.stock) : '0');
             setCategory(product.category || 'Apparel');
             setSizes((product.variants?.sizes || []).join(', '));
+            setProductTypes((product.variants?.types || []).map((t: any) => ({
+                id: Math.random().toString(),
+                name: t.name,
+                price: String(t.price),
+                files: [],
+                existingImages: t.images || [],
+                colors: (t.colors || []).map((c: any) => ({
+                    id: `tc-${Math.random().toString(36).substring(7)}`,
+                    hex: c.hex || '#000000',
+                    files: [],
+                    existingImages: c.images || []
+                }))
+            })));
 
             const prodColors = product.variants?.colors || [];
             let mappedColors: ColorInput[] = prodColors.map((c: any, i: number) => {
@@ -135,6 +191,31 @@ export const EditProductModal = ({ isOpen, onClose, product }: EditProductModalP
             }
         });
 
+        const typeImageMap: { [name: string]: File[] } = {};
+        const typeColorImageMap: { [typeName: string]: { [hex: string]: File[] } } = {};
+        const typesPayload = productTypes.length > 0 ? productTypes.map(t => {
+            const tName = t.name.trim();
+            if (tName && t.files.length > 0) {
+                typeImageMap[tName] = t.files;
+            }
+
+            const typeColors: { hex: string, images: string[] }[] = [];
+            if (tName && t.colors.length > 0) {
+                typeColorImageMap[tName] = {};
+                t.colors.forEach(tc => {
+                    const hex = tc.hex.trim();
+                    if (hex) {
+                        typeColors.push({ hex, images: tc.existingImages });
+                        if (tc.files.length > 0) {
+                            typeColorImageMap[tName][hex] = tc.files;
+                        }
+                    }
+                });
+            }
+
+            return { name: tName, price: parseFloat(t.price) || 0, images: t.existingImages, ...(typeColors.length > 0 && { colors: typeColors }) };
+        }) : undefined;
+
         const success = await updateProduct(product.id, {
             name,
             price: parseFloat(price) || 0,
@@ -144,10 +225,11 @@ export const EditProductModal = ({ isOpen, onClose, product }: EditProductModalP
             stock: parseInt(stock) || 0,
             variants: {
                 sizes: sizes.split(',').map(s => s.trim()).filter(Boolean),
-                colors: productColors
+                colors: productColors,
+                types: typesPayload
             },
-            images: imageFiles.length > 0 ? [] : existingImages,
-        }, imageFiles, colorImageMap);
+            images: existingImages,
+        }, imageFiles, colorImageMap, typeImageMap, typeColorImageMap);
 
         if (success) {
             onClose();
@@ -158,6 +240,11 @@ export const EditProductModal = ({ isOpen, onClose, product }: EditProductModalP
         if (e.target.files) {
             const filesArray = Array.from(e.target.files);
             setColorInputs(prev => prev.map(c => c.id === id ? { ...c, files: [...c.files, ...filesArray] } : c));
+            if (filesArray.length === 1) {
+                const targetObj = colorInputs.find(c => c.id === id);
+                const nextIdx = targetObj ? targetObj.files.length : 0;
+                openCropModal({ stopPropagation: () => { } } as any, 'color', filesArray[0], nextIdx, id);
+            }
         }
     };
 
@@ -167,7 +254,11 @@ export const EditProductModal = ({ isOpen, onClose, product }: EditProductModalP
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
-            setImageFiles(prev => [...prev, ...Array.from(e.target.files!)]);
+            const filesArray = Array.from(e.target.files);
+            setImageFiles(prev => [...prev, ...filesArray]);
+            if (filesArray.length === 1) {
+                openCropModal({ stopPropagation: () => { } } as any, 'general', filesArray[0], imageFiles.length);
+            }
         }
     };
 
@@ -183,6 +274,66 @@ export const EditProductModal = ({ isOpen, onClose, product }: EditProductModalP
     const removeExistingImage = (e: React.MouseEvent, idx: number) => {
         e.stopPropagation();
         setExistingImages(prev => prev.filter((_, i) => i !== idx));
+    };
+
+    const handleTypeFileChange = (id: string, e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            const filesArray = Array.from(e.target.files);
+            setProductTypes(prev => prev.map(t => t.id === id ? { ...t, files: [...t.files, ...filesArray] } : t));
+            if (filesArray.length === 1) {
+                const targetObj = productTypes.find(t => t.id === id);
+                const nextIdx = targetObj ? targetObj.files.length : 0;
+                openCropModal({ stopPropagation: () => { } } as any, 'type', filesArray[0], nextIdx, id);
+            }
+        }
+    };
+
+    const removeNewTypeImage = (typeId: string, idx: number) => {
+        setProductTypes(prev => prev.map(t => t.id === typeId ? { ...t, files: t.files.filter((_, i) => i !== idx) } : t));
+    };
+
+    const removeExistingTypeImage = (typeId: string, idx: number) => {
+        setProductTypes(prev => prev.map(t => t.id === typeId ? { ...t, existingImages: t.existingImages.filter((_, i) => i !== idx) } : t));
+    };
+
+    const handleTypeColorHexChange = (typeId: string, colorId: string, hex: string) => {
+        setProductTypes(prev => prev.map(t => t.id === typeId ? { ...t, colors: t.colors.map(c => c.id === colorId ? { ...c, hex } : c) } : t));
+    };
+
+    const handleTypeColorFileChange = (typeId: string, colorId: string, e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            const filesArray = Array.from(e.target.files);
+            setProductTypes(prev => prev.map(t => {
+                if (t.id === typeId) {
+                    return { ...t, colors: t.colors.map(c => c.id === colorId ? { ...c, files: [...c.files, ...filesArray] } : c) };
+                }
+                return t;
+            }));
+            if (filesArray.length === 1) {
+                const typeObj = productTypes.find(t => t.id === typeId);
+                const colorObj = typeObj?.colors.find(c => c.id === colorId);
+                const nextIdx = colorObj ? colorObj.files.length : 0;
+                openCropModal({ stopPropagation: () => { } } as any, 'type-color', filesArray[0], nextIdx, colorId, typeId);
+            }
+        }
+    };
+
+    const removeNewTypeColorImage = (typeId: string, colorId: string, idx: number) => {
+        setProductTypes(prev => prev.map(t => {
+            if (t.id === typeId) {
+                return { ...t, colors: t.colors.map(c => c.id === colorId ? { ...c, files: c.files.filter((_, i) => i !== idx) } : c) };
+            }
+            return t;
+        }));
+    };
+
+    const removeExistingTypeColorImage = (typeId: string, colorId: string, idx: number) => {
+        setProductTypes(prev => prev.map(t => {
+            if (t.id === typeId) {
+                return { ...t, colors: t.colors.map(c => c.id === colorId ? { ...c, existingImages: c.existingImages.filter((_, i) => i !== idx) } : c) };
+            }
+            return t;
+        }));
     };
 
     return (
@@ -270,6 +421,141 @@ export const EditProductModal = ({ isOpen, onClose, product }: EditProductModalP
 
                                     <div className="flex flex-col gap-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
                                         <div className="flex items-center justify-between">
+                                            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Product Types / Variants (Optional)</label>
+                                            <button type="button" onClick={() => setProductTypes(prev => [...prev, { id: Math.random().toString(), name: '', price: '', files: [], existingImages: [], colors: [] }])} className="text-xs flex items-center gap-1 font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50 px-2 py-1 rounded-md transition-colors">
+                                                <Plus size={14} /> Add Type
+                                            </button>
+                                        </div>
+                                        {productTypes.length > 0 && (
+                                            <div className="flex flex-col gap-3">
+                                                {productTypes.map((pt) => (
+                                                    <div key={pt.id} className="flex flex-col gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm relative">
+                                                        <div className="flex gap-3 items-center">
+                                                            <div className="flex-1">
+                                                                <input type="text" placeholder="e.g. T-Shirt" value={pt.name} onChange={e => setProductTypes(prev => prev.map(p => p.id === pt.id ? { ...p, name: e.target.value } : p))} className="w-full border border-slate-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none" />
+                                                            </div>
+                                                            <div className="w-32">
+                                                                <input type="number" placeholder="Price" value={pt.price} onChange={e => setProductTypes(prev => prev.map(p => p.id === pt.id ? { ...p, price: e.target.value } : p))} className="w-full border border-slate-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none" />
+                                                            </div>
+                                                            <button type="button" onClick={() => setProductTypes(prev => prev.filter(p => p.id !== pt.id))} className="text-slate-400 hover:text-red-500 p-2 border border-slate-200 rounded-lg hover:border-red-200 transition-colors">
+                                                                <Trash2 size={16} />
+                                                            </button>
+                                                        </div>
+                                                        <div className="pt-2 border-t border-slate-100 flex-1 w-full">
+                                                            <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-2 block">Upload Type Specific Preview Images (Optional)</label>
+                                                            <div className="flex flex-wrap gap-2 items-center">
+
+                                                                {pt.existingImages.map((src, i) => (
+                                                                    <div key={`ext-type-${i}`} className="relative w-12 h-12 rounded border border-slate-200 overflow-hidden shadow-sm group/img">
+                                                                        <img src={src} alt="existing" className="w-full h-full object-cover opacity-80 group-hover/img:opacity-40 transition-opacity" />
+                                                                        <div className="absolute inset-0 opacity-0 group-hover/img:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1">
+                                                                            <button type="button" onClick={(e) => openCropModalForExisting(e, 'existing-type', src, i, pt.id)} className="bg-slate-900/80 text-white p-1 rounded-sm hover:bg-indigo-600 transition-colors" title="Crop">
+                                                                                <Crop size={12} />
+                                                                            </button>
+                                                                            <button type="button" onClick={(e) => { e.stopPropagation(); removeExistingTypeImage(pt.id, i); }} className="bg-rose-500/90 text-white p-1 rounded-sm hover:bg-rose-500 transition-colors" title="Delete">
+                                                                                <Trash2 size={12} />
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+
+                                                                {pt.files.map((f, i) => (
+                                                                    <div key={i} className="relative w-12 h-12 rounded border border-slate-200 overflow-hidden shadow-sm group/img">
+                                                                        <img src={URL.createObjectURL(f)} alt="pic" className="w-full h-full object-cover opacity-80 group-hover/img:opacity-40 transition-opacity" />
+                                                                        <div className="absolute inset-0 opacity-0 group-hover/img:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1">
+                                                                            <button type="button" onClick={(e) => openCropModal(e, 'type', f, i, pt.id)} className="bg-slate-900/80 text-white p-1 rounded-sm hover:bg-indigo-600 transition-colors" title="Crop">
+                                                                                <Crop size={12} />
+                                                                            </button>
+                                                                            <button type="button" onClick={(e) => { e.stopPropagation(); removeNewTypeImage(pt.id, i); }} className="bg-rose-500/90 text-white p-1 rounded-sm hover:bg-rose-500 transition-colors" title="Delete">
+                                                                                <Trash2 size={12} />
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                                <label className="w-12 h-12 rounded border border-dashed border-slate-300 flex items-center justify-center text-slate-400 hover:text-indigo-500 hover:border-indigo-400 hover:bg-slate-50 cursor-pointer transition-colors">
+                                                                    <Plus size={18} />
+                                                                    <input type="file" multiple accept="image/*" className="hidden" onChange={e => handleTypeFileChange(pt.id, e)} />
+                                                                </label>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* NESTED COLORS SECTION INSIDE PRODUCT TYPE */}
+                                                        <div className="pt-4 border-t border-slate-100 flex-1 w-full flex flex-col gap-3">
+                                                            <div className="flex items-center justify-between">
+                                                                <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest block">Type Specific Colors</label>
+                                                                <button type="button" onClick={() => setProductTypes(prev => prev.map(p => p.id === pt.id ? { ...p, colors: [...p.colors, { id: Math.random().toString(), hex: '#000000', files: [], existingImages: [] }] } : p))} className="text-[10px] flex items-center gap-1 font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50 px-2 py-1 rounded-md transition-colors">
+                                                                    <Plus size={12} /> Add Color
+                                                                </button>
+                                                            </div>
+                                                            <div className="flex flex-col gap-3">
+                                                                {pt.colors.map(colorInput => (
+                                                                    <div key={colorInput.id} className="flex flex-col sm:flex-row gap-3 items-start sm:items-center bg-slate-50 p-2 rounded-lg border border-slate-200 shadow-sm relative group">
+
+                                                                        <div className="flex items-center gap-2">
+                                                                            <div className="flex flex-col gap-1 text-center items-center justify-center">
+                                                                                <div className="w-8 h-8 rounded-full border-2 border-slate-200 overflow-hidden shadow-inner flex-shrink-0 relative cursor-pointer group/color">
+                                                                                    <input type="color" value={colorInput.hex.startsWith('#') ? colorInput.hex : '#000000'} onChange={e => handleTypeColorHexChange(pt.id, colorInput.id, e.target.value)} className="absolute -inset-6 w-20 h-20 opacity-0 cursor-pointer" />
+                                                                                    <div className="absolute inset-0 pointer-events-none" style={{ backgroundColor: colorInput.hex }}></div>
+                                                                                </div>
+                                                                                <div className="text-[10px] font-mono text-slate-500 uppercase truncate w-10">{colorInput.hex}</div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div className="flex-1 w-full border-l border-slate-100 pl-3">
+                                                                            <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-2 block">Upload Color Images</label>
+                                                                            <div className="flex flex-wrap gap-2 items-center">
+                                                                                {colorInput.existingImages.map((src, i) => (
+                                                                                    <div key={`ext-tc-${i}`} className="relative w-10 h-10 rounded border border-slate-200 overflow-hidden shadow-sm group/img">
+                                                                                        <img src={src} alt="existing" className="w-full h-full object-cover opacity-80 group-hover/img:opacity-40 transition-opacity" />
+                                                                                        <div className="absolute inset-0 opacity-0 group-hover/img:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1">
+                                                                                            <button type="button" onClick={(e) => openCropModalForExisting(e, 'existing-type-color', src, i, colorInput.id, pt.id)} className="bg-slate-900/80 text-white p-0.5 rounded-sm hover:bg-indigo-600 transition-colors" title="Crop">
+                                                                                                <Crop size={10} />
+                                                                                            </button>
+                                                                                            <button type="button" onClick={(e) => { e.stopPropagation(); removeExistingTypeColorImage(pt.id, colorInput.id, i); }} className="bg-rose-500/90 text-white p-0.5 rounded-sm hover:bg-rose-500 transition-colors" title="Delete">
+                                                                                                <Trash2 size={10} />
+                                                                                            </button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                ))}
+
+                                                                                {colorInput.files.map((f, i) => (
+                                                                                    <div key={i} className="relative w-10 h-10 rounded border border-slate-200 overflow-hidden shadow-sm group/img">
+                                                                                        <img src={URL.createObjectURL(f)} alt="pic" className="w-full h-full object-cover opacity-80 group-hover/img:opacity-40 transition-opacity" />
+                                                                                        <div className="absolute inset-0 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center gap-1">
+                                                                                            <button type="button" onClick={(e) => openCropModal(e, 'type-color', f, i, colorInput.id, pt.id)} className="bg-slate-900/80 text-white p-0.5 rounded-sm hover:bg-indigo-600 transition-colors" title="Crop">
+                                                                                                <Crop size={10} />
+                                                                                            </button>
+                                                                                            <button type="button" onClick={(e) => { e.stopPropagation(); removeNewTypeColorImage(pt.id, colorInput.id, i); }} className="bg-rose-500/90 text-white p-0.5 rounded-sm hover:bg-rose-500 transition-colors" title="Delete">
+                                                                                                <Trash2 size={10} />
+                                                                                            </button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                ))}
+                                                                                <label className="w-10 h-10 rounded border border-dashed border-slate-300 flex items-center justify-center text-slate-400 hover:text-indigo-500 hover:border-indigo-400 hover:bg-white cursor-pointer transition-colors">
+                                                                                    <Plus size={14} />
+                                                                                    <input type="file" multiple accept="image/*" className="hidden" onChange={e => handleTypeColorFileChange(pt.id, colorInput.id, e)} />
+                                                                                </label>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <button type="button" onClick={() => setProductTypes(prev => prev.map(p => p.id === pt.id ? { ...p, colors: p.colors.filter(c => c.id !== colorInput.id) } : p))} className="text-slate-400 hover:text-red-500 transition-colors p-2 absolute right-0 top-0 opacity-0 group-hover:opacity-100 focus:opacity-100">
+                                                                            <Trash2 size={14} />
+                                                                        </button>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                        <div className="text-xs text-slate-500">
+                                            Add sub-products (e.g. "T-Shirt" vs "Hoodie") to overwrite the default price dynamically or render specific mockups.
+                                        </div>
+                                    </div>
+
+                                    <div className="flex flex-col gap-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                                        <div className="flex items-center justify-between">
                                             <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Color Variations</label>
                                             <button type="button" onClick={() => setColorInputs(prev => [...prev, { id: Math.random().toString(), hex: '#000000', files: [], existingImages: [] }])} className="text-xs flex items-center gap-1 font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50 px-2 py-1 rounded-md transition-colors">
                                                 <Plus size={14} /> Add Color
@@ -346,7 +632,7 @@ export const EditProductModal = ({ isOpen, onClose, product }: EditProductModalP
                                     <div className="mt-2 text-center text-xs text-slate-500 bg-slate-50 p-2 rounded-lg border border-slate-200">
                                         <span className="font-semibold text-slate-700">Heads up:</span> Color Hex is now the primary method of specifying colors!
                                     </div>
-                                    <div className="mt-2 hidden">
+                                    <div className="mt-2">
                                         <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-2">General Product Visuals (Fallback)</label>
                                         <div
                                             className="border-2 border-slate-300 border-dashed rounded-lg p-8 flex flex-col items-center justify-center bg-slate-50 group hover:bg-indigo-50 hover:border-indigo-300 transition-colors cursor-pointer mt-2"

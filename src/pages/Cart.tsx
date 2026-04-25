@@ -45,7 +45,7 @@ export const Cart = () => {
                                         <img src={item.image} alt={item.name} className="w-20 h-28 object-cover bg-gray-50 border border-gray-100" />
                                         <div className="flex flex-col justify-center">
                                             <Link to={`/product/${item.productId}`} className="font-medium text-sm text-gray-900 uppercase tracking-widest hover:text-gray-500 transition-colors">{item.name}</Link>
-                                            <p className="text-xs uppercase tracking-widest text-gray-500 mt-2">{item.variant.color} / {item.variant.size}</p>
+                                            <p className="text-xs uppercase tracking-widest text-gray-500 mt-2">{item.variant.type ? `${item.variant.type} / ` : ''}{item.variant.color} / {item.variant.size}</p>
                                             <button onClick={() => removeItem(item.id)} className="text-xs text-gray-400 hover:text-red-500 flex items-center gap-1 mt-4 w-fit uppercase tracking-widest">
                                                 <Trash2 className="w-3 h-3" /> Remove
                                             </button>

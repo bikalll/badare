@@ -15,6 +15,7 @@ export const ProductDetail = () => {
 
     const [selectedSize, setSelectedSize] = useState('');
     const [selectedColor, setSelectedColor] = useState('');
+    const [selectedType, setSelectedType] = useState('');
     const [quantity, setQuantity] = useState(1);
     const [activeImage, setActiveImage] = useState(0);
     const [isAdded, setIsAdded] = useState(false);
@@ -22,46 +23,77 @@ export const ProductDetail = () => {
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         if (product) {
-            setSelectedSize(product.variants.sizes[0]);
+            setSelectedSize(product.variants.sizes[0] || '');
             const firstColor = product.variants.colors[0];
             setSelectedColor(typeof firstColor === 'string' ? firstColor : (firstColor?.hex || ''));
+            setSelectedType(product.variants.types && product.variants.types.length > 0 ? product.variants.types[0].name : '');
         } else {
             navigate('/shop');
         }
     }, [product, navigate]);
 
     useEffect(() => {
-        setActiveImage(0); // Reset image index on color change
-    }, [selectedColor, product]);
+        setActiveImage(0); // Reset image index on color/type change
+    }, [selectedColor, selectedType, product]);
 
-    if (!product) return null;
+    const currentTypeObj = product?.variants?.types?.find(t => t.name === selectedType);
+    const displayPrice = currentTypeObj ? currentTypeObj.price : (product?.price || 0);
 
-    const handleAdd = () => {
-        addItem({
-            productId: product.id,
-            name: product.name,
-            price: product.price,
-            image: displayImages[0] || product.images[0],
-            quantity,
-            variant: {
-                size: selectedSize,
-                color: selectedColor
+    useEffect(() => {
+        if (!product) return;
+        if (currentTypeObj && currentTypeObj.colors && currentTypeObj.colors.length > 0) {
+            const hasColor = currentTypeObj.colors.find(c => (typeof c === 'string' ? c : c.hex) === selectedColor);
+            if (!hasColor) {
+                const firstColor = currentTypeObj.colors[0];
+                setSelectedColor(typeof firstColor === 'string' ? firstColor : (firstColor.hex || ''));
             }
-        });
-        
-        setIsAdded(true);
-        setTimeout(() => setIsAdded(false), 2000);
-    };
+        } else if (product.variants?.colors && product.variants.colors.length > 0) {
+            const hasColor = product.variants.colors.find(c => (typeof c === 'string' ? c : c.hex) === selectedColor);
+            if (!hasColor) {
+                const firstColor = product.variants.colors[0];
+                setSelectedColor(typeof firstColor === 'string' ? firstColor : (firstColor.hex || ''));
+            }
+        }
+    }, [selectedType, product?.variants?.types]);
 
-    const normalizedColors = product.variants.colors.map(c => {
+    const currentTypeColors = currentTypeObj?.colors && currentTypeObj.colors.length > 0
+        ? currentTypeObj.colors
+        : (product?.variants?.colors || []);
+
+    const normalizedColors = currentTypeColors.map(c => {
         if (typeof c === 'string') return { hex: c, images: [] };
         return { hex: c.hex, images: c.images || [] };
     });
 
     const currentColorObj = normalizedColors.find(c => c.hex === selectedColor);
-    const displayImages = currentColorObj && currentColorObj.images.length > 0 
-        ? currentColorObj.images 
-        : product.images;
+
+    let displayImages = product?.images || [];
+    if (currentColorObj && currentColorObj.images && currentColorObj.images.length > 0) {
+        displayImages = currentColorObj.images;
+    } else if (currentTypeObj && currentTypeObj.images && currentTypeObj.images.length > 0) {
+        displayImages = currentTypeObj.images;
+    }
+
+    const handleAdd = () => {
+        if (!product) return;
+        addItem({
+            productId: product.id,
+            name: product.name,
+            price: displayPrice,
+            image: displayImages[0] || product.images[0],
+            quantity,
+            variant: {
+                size: selectedSize,
+                color: selectedColor,
+                ...(selectedType ? { type: selectedType } : {})
+            }
+        });
+
+        setIsAdded(true);
+        setTimeout(() => setIsAdded(false), 2000);
+    };
+
+    if (!product) return null;
 
     return (
         <motion.div
@@ -72,8 +104,8 @@ export const ProductDetail = () => {
         >
             {/* Breadcrumb / Back Navigation */}
             <nav className="flex items-center text-sm font-medium text-gray-500 mb-8 md:mb-12 space-x-2">
-                <button 
-                    onClick={() => navigate('/shop')} 
+                <button
+                    onClick={() => navigate('/shop')}
                     className="hover:text-black transition-colors flex items-center gap-2 group"
                 >
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
@@ -96,23 +128,22 @@ export const ProductDetail = () => {
                             className="w-full h-full object-cover object-center transition-transform duration-700 ease-in-out group-hover:scale-105"
                         />
                     </div>
-                    
+
                     {/* Thumbnails */}
                     <div className="flex md:flex-col gap-4 overflow-x-auto md:overflow-visible pb-2 md:pb-0 hide-scrollbar md:w-24 shrink-0">
                         {displayImages.map((img, idx) => (
                             <button
                                 key={idx}
                                 onClick={() => setActiveImage(idx)}
-                                className={`relative w-20 md:w-full aspect-[4/5] bg-slate-50 overflow-hidden transition-all duration-300 ${
-                                    activeImage === idx 
-                                    ? 'ring-1 ring-black ring-offset-2 opacity-100' 
+                                className={`relative w-20 md:w-full aspect-[4/5] bg-slate-50 overflow-hidden transition-all duration-300 ${activeImage === idx
+                                    ? 'ring-1 ring-black ring-offset-2 opacity-100'
                                     : 'opacity-60 hover:opacity-100'
-                                }`}
+                                    }`}
                             >
-                                <img 
-                                    src={img} 
-                                    alt={`View ${idx + 1}`} 
-                                    className="w-full h-full object-cover" 
+                                <img
+                                    src={img}
+                                    alt={`View ${idx + 1}`}
+                                    className="w-full h-full object-cover"
                                 />
                             </button>
                         ))}
@@ -131,8 +162,32 @@ export const ProductDetail = () => {
                     </div>
 
                     <div className="text-2xl font-medium text-gray-900 mb-8">
-                        NPR {product.price.toLocaleString()}
+                        NPR {displayPrice.toLocaleString()}
                     </div>
+
+                    {/* Types Selection */}
+                    {product.variants.types && product.variants.types.length > 0 && (
+                        <div className="mb-8">
+                            <div className="flex justify-between items-center mb-3">
+                                <span className="text-sm font-medium text-gray-900 uppercase tracking-wider">Product Type</span>
+                                <span className="text-sm text-gray-500 capitalize">{selectedType}</span>
+                            </div>
+                            <div className="flex flex-wrap gap-3">
+                                {product.variants.types.map((type) => (
+                                    <button
+                                        key={type.name}
+                                        onClick={() => setSelectedType(type.name)}
+                                        className={`px-4 py-2 text-sm font-medium transition-all ${selectedType === type.name
+                                            ? 'bg-black text-white border border-black'
+                                            : 'bg-white text-gray-900 border border-gray-200 hover:border-black'
+                                            }`}
+                                    >
+                                        {type.name}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     <div className="prose prose-sm text-gray-600 mb-10 leading-relaxed font-light">
                         <p>{product.description}</p>
@@ -149,15 +204,14 @@ export const ProductDetail = () => {
                                 <button
                                     key={colorObj.hex}
                                     onClick={() => setSelectedColor(colorObj.hex)}
-                                    className={`w-10 h-10 rounded-full transition-all flex items-center justify-center ${
-                                        selectedColor === colorObj.hex 
-                                        ? 'ring-2 ring-black ring-offset-2' 
+                                    className={`w-10 h-10 rounded-full transition-all flex items-center justify-center ${selectedColor === colorObj.hex
+                                        ? 'ring-2 ring-black ring-offset-2'
                                         : 'ring-1 ring-gray-200 hover:ring-gray-400'
-                                    }`}
+                                        }`}
                                     title={colorObj.hex}
                                 >
-                                    <span 
-                                        className="w-8 h-8 rounded-full shadow-inner" 
+                                    <span
+                                        className="w-8 h-8 rounded-full shadow-inner"
                                         style={{ backgroundColor: colorObj.hex }}
                                     />
                                 </button>
@@ -175,11 +229,10 @@ export const ProductDetail = () => {
                                 <button
                                     key={size}
                                     onClick={() => setSelectedSize(size)}
-                                    className={`py-3 text-sm font-medium transition-all ${
-                                        selectedSize === size 
-                                        ? 'bg-black text-white border border-black' 
+                                    className={`py-3 text-sm font-medium transition-all ${selectedSize === size
+                                        ? 'bg-black text-white border border-black'
                                         : 'bg-white text-gray-900 border border-gray-200 hover:border-black'
-                                    }`}
+                                        }`}
                                 >
                                     {size}
                                 </button>
@@ -191,15 +244,15 @@ export const ProductDetail = () => {
                     <div className="flex flex-col sm:flex-row gap-4 mb-10">
                         {/* Quantity Selector */}
                         <div className="flex items-center justify-between border border-gray-200 px-4 py-4 sm:w-1/3">
-                            <button 
-                                onClick={() => setQuantity(Math.max(1, quantity - 1))} 
+                            <button
+                                onClick={() => setQuantity(Math.max(1, quantity - 1))}
                                 className="text-gray-400 hover:text-black transition-colors"
                             >
                                 <Minus className="w-5 h-5" />
                             </button>
                             <span className="text-base font-medium">{quantity}</span>
-                            <button 
-                                onClick={() => setQuantity(quantity + 1)} 
+                            <button
+                                onClick={() => setQuantity(quantity + 1)}
                                 className="text-gray-400 hover:text-black transition-colors"
                             >
                                 <Plus className="w-5 h-5" />
@@ -210,11 +263,10 @@ export const ProductDetail = () => {
                         <button
                             onClick={handleAdd}
                             disabled={isAdded}
-                            className={`flex-1 flex justify-center items-center py-4 px-8 text-sm font-medium uppercase tracking-widest transition-all ${
-                                isAdded 
-                                ? 'bg-green-600 text-white border-green-600' 
+                            className={`flex-1 flex justify-center items-center py-4 px-8 text-sm font-medium uppercase tracking-widest transition-all ${isAdded
+                                ? 'bg-green-600 text-white border-green-600'
                                 : 'bg-black text-white border border-black hover:bg-gray-900'
-                            }`}
+                                }`}
                         >
                             {isAdded ? 'Added to Bag' : 'Add to Bag'}
                         </button>
@@ -231,13 +283,13 @@ export const ProductDetail = () => {
                             </div>
                         )}
                         <div className="py-5 flex items-center gap-4 text-sm text-gray-900 uppercase tracking-wider font-medium cursor-pointer hover:text-gray-600 transition-colors">
-                            <Share2 className="w-4 h-4"/> Share
+                            <Share2 className="w-4 h-4" /> Share
                         </div>
                     </div>
 
                 </div>
             </div>
-            
+
             {/* Minimalist CSS for hiding scrollbar on webkit if needed */}
             <style>{`
                 .hide-scrollbar::-webkit-scrollbar {

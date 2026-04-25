@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { useProductStore } from '../../store/useProductStore';
+import { useProductStore, getAllProductImages } from '../../store/useProductStore';
 import { EditProductModal } from './EditProductModal';
 import { AddProductModal } from './AddProductModal';
 import { Plus, LayoutGrid, List } from 'lucide-react';
 import { supabase } from '../../utils/supabaseClient';
+import { deleteFromCloudinary } from '../../utils/cloudinary';
 
 export const AdminProducts = () => {
     const { products, fetchProducts } = useProductStore();
@@ -20,9 +21,15 @@ export const AdminProducts = () => {
 
     const handleDelete = async (id: string) => {
         if (!window.confirm('Delete this product permanently?')) return;
-        
+
+        const productToDelete = products.find(p => p.id === id);
+
         const { error } = await supabase.from('products').delete().eq('id', id);
         if (!error) {
+            if (productToDelete) {
+                const urlsToDelete = getAllProductImages(productToDelete);
+                urlsToDelete.forEach(url => deleteFromCloudinary(url));
+            }
             fetchProducts();
         } else {
             alert('Error deleting product');
@@ -39,13 +46,13 @@ export const AdminProducts = () => {
                 <div className="flex items-center gap-4 w-full md:w-auto">
                     {/* View Toggle */}
                     <div className="flex bg-slate-200 p-1 rounded-lg shrink-0">
-                        <button 
+                        <button
                             onClick={() => setViewMode('TABLE')}
                             className={`p-1.5 rounded-md transition-all ${viewMode === 'TABLE' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}
                         >
                             <List size={18} />
                         </button>
-                        <button 
+                        <button
                             onClick={() => setViewMode('GRID')}
                             className={`p-1.5 rounded-md transition-all ${viewMode === 'GRID' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}
                         >
@@ -53,7 +60,7 @@ export const AdminProducts = () => {
                         </button>
                     </div>
 
-                    <button 
+                    <button
                         onClick={() => setIsAddModalOpen(true)}
                         className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-lg font-medium transition-all shadow-sm whitespace-nowrap"
                     >
@@ -97,13 +104,13 @@ export const AdminProducts = () => {
                                         </td>
                                         <td className="py-4 px-6 text-right">
                                             <div className="flex justify-end gap-3">
-                                                <button 
+                                                <button
                                                     onClick={() => setEditingProduct(p)}
                                                     className="text-indigo-600 hover:text-indigo-900 font-medium text-sm transition-colors"
                                                 >
                                                     Edit
                                                 </button>
-                                                <button 
+                                                <button
                                                     onClick={() => handleDelete(p.id)}
                                                     className="text-rose-600 hover:text-rose-900 font-medium text-sm transition-colors"
                                                 >
@@ -136,15 +143,15 @@ export const AdminProducts = () => {
                                     <span className="text-xs font-semibold text-indigo-600 uppercase tracking-wider mb-1">{p.category}</span>
                                     <h3 className="font-bold text-slate-900 mb-1 line-clamp-1">{p.name}</h3>
                                     <p className="font-semibold text-slate-700 mt-auto">NPR {p.price}</p>
-                                    
+
                                     <div className="flex gap-2 mt-4 pt-4 border-t border-slate-100">
-                                        <button 
+                                        <button
                                             onClick={() => setEditingProduct(p)}
                                             className="flex-1 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-md transition-colors"
                                         >
                                             Edit
                                         </button>
-                                        <button 
+                                        <button
                                             onClick={() => handleDelete(p.id)}
                                             className="flex-1 py-1.5 text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-md transition-colors"
                                         >
@@ -160,10 +167,10 @@ export const AdminProducts = () => {
 
             <AddProductModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />
             {editingProduct && (
-                <EditProductModal 
-                    isOpen={!!editingProduct} 
-                    onClose={() => setEditingProduct(null)} 
-                    product={editingProduct} 
+                <EditProductModal
+                    isOpen={!!editingProduct}
+                    onClose={() => setEditingProduct(null)}
+                    product={editingProduct}
                 />
             )}
         </div>

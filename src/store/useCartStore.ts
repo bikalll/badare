@@ -11,6 +11,7 @@ export interface CartItem {
     variant: {
         size: string;
         color: string;
+        type?: string;
     };
 }
 
@@ -47,7 +48,8 @@ export const useCartStore = create<CartState>()(
                     const existingItemIndex = state.items.findIndex(
                         (i) => i.productId === item.productId &&
                             i.variant.size === item.variant.size &&
-                            i.variant.color === item.variant.color
+                            i.variant.color === item.variant.color &&
+                            i.variant.type === item.variant.type
                     );
 
                     if (existingItemIndex > -1) {
