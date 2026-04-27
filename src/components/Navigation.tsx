@@ -34,8 +34,8 @@ export const Navigation = () => {
 
     const navClasses = cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-700 px-6 md:px-16 lg:px-24 py-6 md:py-8 flex items-center justify-between border-b",
-        isScrolled 
-            ? "bg-white/95 backdrop-blur-3xl text-black border-black/5 shadow-sm py-4 md:py-5" 
+        isScrolled
+            ? "bg-white/95 backdrop-blur-3xl text-black border-black/5 shadow-sm py-4 md:py-5"
             : "bg-transparent text-black border-transparent shadow-none"
     );
 
@@ -44,14 +44,14 @@ export const Navigation = () => {
             <nav className={navClasses}>
                 <div className="flex items-center gap-6 flex-1">
                     <button
-                        className="md:hidden text-xs tracking-[0.2em] font-medium uppercase text-black hover:text-gray-500 transition-colors"
+                        className="md:hidden text-[10px] tracking-[0.2em] font-medium uppercase text-black hover:text-gray-500 transition-colors"
                         onClick={() => setIsMobileMenuOpen(true)}
                         aria-label="Open menu"
                     >
                         MENU
                     </button>
 
-                    <div className="hidden md:flex gap-10 text-xs uppercase tracking-[0.2em] font-medium text-gray-500">
+                    <div className="hidden md:flex gap-10 text-[10px] uppercase tracking-[0.2em] font-medium text-gray-500">
                         <Link to="/" className="hover:text-black transition-colors">Home</Link>
                         <Link to="/shop" className="hover:text-black transition-colors">Shop</Link>
                         <Link to="/about" className="hover:text-black transition-colors">About</Link>
@@ -60,17 +60,17 @@ export const Navigation = () => {
                     </div>
                 </div>
 
-                <div className="flex-1 text-center flex justify-center">
-                    <Link to="/" className="inline-flex items-center justify-center group overflow-visible">
+                <div className="flex-1 text-center flex justify-center border-none">
+                    <Link to="/" className="inline-flex items-center justify-center group overflow-visible relative h-6 md:h-8 w-20 md:w-32">
                         {/* Rotating logo on hover with an elegant slow spin curve */}
-                        <img src="/image.png" alt="BADAR-È" className="h-8 md:h-10 w-auto mix-blend-multiply object-contain group-hover:rotate-[360deg] transition-all duration-1000 ease-in-out" />
+                        <img src="/image.png" alt="BADAR-È" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-9 md:h-9 max-w-none mix-blend-multiply object-contain group-hover:rotate-[360deg] transition-all duration-1000 ease-in-out" />
                     </Link>
                 </div>
 
-                <div className="flex items-center justify-end gap-6 md:gap-10 flex-1 text-xs uppercase tracking-[0.2em] font-medium text-gray-500">
-                    <button 
+                <div className="flex items-center justify-end gap-6 md:gap-10 flex-1 text-[10px] uppercase tracking-[0.2em] font-medium text-gray-500">
+                    <button
                         onClick={() => setIsSearchOpen(true)}
-                        aria-label="Search" 
+                        aria-label="Search"
                         className="hidden md:block hover:text-black transition-colors"
                     >
                         SEARCH
@@ -90,7 +90,7 @@ export const Navigation = () => {
                 <div className="fixed inset-0 z-[60] bg-white flex flex-col p-6 overflow-hidden">
                     <div className="flex justify-between items-center mb-10 pb-4 border-b border-gray-100">
                         <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>
-                            <img src="/image.png" alt="BADAR-È" className="h-8 w-auto mix-blend-multiply object-contain" />
+                            <img src="/image.png" alt="BADAR-È" className="h-9 w-auto mix-blend-multiply object-contain" />
                         </Link>
                         <button onClick={() => setIsMobileMenuOpen(false)} aria-label="Close menu" className="text-black hover:text-gray-600 p-2 transition-colors">
                             <X className="w-6 h-6" />

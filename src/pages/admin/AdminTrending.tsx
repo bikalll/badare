@@ -30,10 +30,10 @@ export const AdminTrending = () => {
                     {products.map(product => (
                         <motion.div key={product.id} layout className={`bg-white rounded-xl shadow-sm border overflow-hidden flex flex-col transition-all ${product.isTrending ? 'border-indigo-400 ring-2 ring-indigo-100' : 'border-slate-200'}`}>
                             <div className="h-64 bg-slate-100 relative group flex-shrink-0">
-                                <img src={product.images[0] || ''} alt={product.name} className="w-full h-full object-cover" />
+                                <img src={(product.images && product.images.length > 0) ? product.images[0] : ((product.variants?.colors?.find((c: any) => typeof c === 'object' && (c as any).images && (c as any).images.length > 0) as any)?.images?.[0] || '')} alt={product.name} className="w-full h-full object-cover" />
                                 <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                    <button 
-                                        onClick={() => toggleTrending(product.id, product.isTrending || false)} 
+                                    <button
+                                        onClick={() => toggleTrending(product.id, product.isTrending || false)}
                                         className={`px-4 py-2 rounded-full font-bold text-xs uppercase tracking-wider flex items-center gap-2 transition ${product.isTrending ? 'bg-white text-rose-600 hover:bg-rose-50' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}
                                     >
                                         <Star size={16} className={product.isTrending ? "fill-rose-600" : ""} />

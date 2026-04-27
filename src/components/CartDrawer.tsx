@@ -1,4 +1,4 @@
-import { X, Plus, Minus } from 'lucide-react';
+import { X, Plus, Minus, Asterisk } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCartStore } from '../store/useCartStore';
 
@@ -53,8 +53,13 @@ export const CartDrawer = () => {
                                                 <X className="w-4 h-4" />
                                             </button>
                                         </div>
-                                        <p className="text-xs uppercase text-gray-500 mb-2">{item.variant.color} / {item.variant.size}</p>
-                                        <p className="text-sm font-medium">NPR {item.price}</p>
+                                        <p className="text-xs uppercase text-gray-500 mb-1">{item.variant.color} / {item.variant.size}</p>
+                                        {item.customDesign && (
+                                            <p className="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-semibold mb-2 flex items-center gap-1">
+                                                <Asterisk className="w-3 h-3" /> Custom Graphic
+                                            </p>
+                                        )}
+                                        <p className="text-sm font-bold">NPR {item.price}</p>
                                     </div>
                                     <div className="flex justify-between items-end">
                                         <div className="flex items-center gap-4 border border-gray-200 px-3 py-1">

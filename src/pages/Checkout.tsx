@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useCartStore } from '../store/useCartStore';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../utils/supabaseClient';
+import { Asterisk } from 'lucide-react';
 
 export const Checkout = () => {
     const { items, getCartTotal, clearCart } = useCartStore();
@@ -31,11 +32,11 @@ export const Checkout = () => {
 
     const handlePaymentSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         // Generate a shorter, punchy order number
         const randomSegment = Math.random().toString(36).substring(2, 8).toUpperCase();
         const generatedOrderNumber = `BAD-${randomSegment}`;
-        
+
         const orderData = {
             orderNumber: generatedOrderNumber,
             customerEmail: shippingData.email,
@@ -48,7 +49,7 @@ export const Checkout = () => {
             total: getCartTotal(),
             status: 'Pending'
         };
-        
+
         const { error } = await supabase.from('orders').insert([orderData]);
 
         if (error) {
@@ -60,8 +61,8 @@ export const Checkout = () => {
         // Trigger email notification Edge Function
         try {
             await supabase.functions.invoke('send-order-email', {
-                body: { 
-                    orderDetails: orderData, 
+                body: {
+                    orderDetails: orderData,
                     customerEmail: shippingData.email,
                     adminEmail: 'bikalniraulaa@gmail.com'
                 }
@@ -99,28 +100,28 @@ export const Checkout = () => {
 
                             <div className="flex flex-col gap-2 relative">
                                 <label className="text-xs font-medium tracking-widest uppercase text-gray-500">Email Address</label>
-                                <input type="email" required value={shippingData.email} onChange={e => setShippingData({...shippingData, email: e.target.value})} className="bg-white border border-gray-200 p-4 outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all font-light text-sm" />
+                                <input type="email" required value={shippingData.email} onChange={e => setShippingData({ ...shippingData, email: e.target.value })} className="bg-white border border-gray-200 p-4 outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all font-light text-sm" />
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="flex flex-col gap-2 relative">
                                     <label className="text-xs font-medium tracking-widest uppercase text-gray-500">First Name</label>
-                                    <input type="text" required value={shippingData.firstName} onChange={e => setShippingData({...shippingData, firstName: e.target.value})} className="bg-white border border-gray-200 p-4 outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all font-light text-sm" />
+                                    <input type="text" required value={shippingData.firstName} onChange={e => setShippingData({ ...shippingData, firstName: e.target.value })} className="bg-white border border-gray-200 p-4 outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all font-light text-sm" />
                                 </div>
                                 <div className="flex flex-col gap-2 relative">
                                     <label className="text-xs font-medium tracking-widest uppercase text-gray-500">Last Name</label>
-                                    <input type="text" required value={shippingData.lastName} onChange={e => setShippingData({...shippingData, lastName: e.target.value})} className="bg-white border border-gray-200 p-4 outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all font-light text-sm" />
+                                    <input type="text" required value={shippingData.lastName} onChange={e => setShippingData({ ...shippingData, lastName: e.target.value })} className="bg-white border border-gray-200 p-4 outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all font-light text-sm" />
                                 </div>
                             </div>
 
                             <div className="flex flex-col gap-2 relative">
                                 <label className="text-xs font-medium tracking-widest uppercase text-gray-500">Address</label>
-                                <input type="text" required value={shippingData.address} onChange={e => setShippingData({...shippingData, address: e.target.value})} className="bg-white border border-gray-200 p-4 outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all font-light text-sm" />
+                                <input type="text" required value={shippingData.address} onChange={e => setShippingData({ ...shippingData, address: e.target.value })} className="bg-white border border-gray-200 p-4 outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all font-light text-sm" />
                             </div>
 
                             <div className="flex flex-col gap-2 relative">
                                 <label className="text-xs font-medium tracking-widest uppercase text-gray-500">Contact Number</label>
-                                <input type="tel" required value={shippingData.contactNumber} onChange={e => setShippingData({...shippingData, contactNumber: e.target.value})} className="bg-white border border-gray-200 p-4 outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all font-light text-sm" />
+                                <input type="tel" required value={shippingData.contactNumber} onChange={e => setShippingData({ ...shippingData, contactNumber: e.target.value })} className="bg-white border border-gray-200 p-4 outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all font-light text-sm" />
                             </div>
 
                             <button type="submit" className="bg-gray-900 w-full text-white font-medium text-sm uppercase tracking-widest py-4 hover:bg-black transition-colors shadow-sm mt-4">
@@ -132,7 +133,7 @@ export const Checkout = () => {
                     {step === 2 && (
                         <form onSubmit={handlePaymentSubmit} className="flex flex-col gap-8 animate-in fade-in duration-300">
                             <h2 className="font-display text-2xl uppercase tracking-widest text-gray-900 font-light mb-2">Payment</h2>
-                            
+
                             <div className="p-4 bg-gray-50 border border-gray-100 text-gray-600 text-xs tracking-widest uppercase text-center mb-4">
                                 Demo Mode: Scan QR or Enter arbitrary code.
                             </div>
@@ -175,6 +176,11 @@ export const Checkout = () => {
                                         <div>
                                             <p className="text-sm uppercase tracking-widest text-gray-900 font-medium line-clamp-1">{item.name}</p>
                                             <p className="text-xs uppercase text-gray-500 mt-1">{item.variant.size} / {item.variant.color}</p>
+                                            {item.customDesign && (
+                                                <p className="text-[10px] uppercase tracking-[0.2em] text-[#B8860B] font-semibold mt-1 flex items-center gap-1">
+                                                    <Asterisk className="w-3 h-3" /> Custom Graphic
+                                                </p>
+                                            )}
                                         </div>
                                         <div className="flex justify-between items-end mt-2 text-sm">
                                             <p className="text-gray-500 font-light">Qty: {item.quantity}</p>

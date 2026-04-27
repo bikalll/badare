@@ -48,7 +48,7 @@ export const Shop = () => {
         hidden: { opacity: 0 },
         show: { opacity: 1, transition: { staggerChildren: 0.1 } }
     };
-    
+
     const fadeInUp = {
         hidden: { opacity: 0, y: 40 },
         show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.21, 0.47, 0.32, 0.98] } }
@@ -58,7 +58,7 @@ export const Shop = () => {
         <div className="pb-32 pt-24 bg-[#fcfcfc] min-h-screen">
             <div className="max-w-[100rem] mx-auto px-6">
                 <header className="mb-16 mt-8 md:mt-24 text-center">
-                    <motion.h1 
+                    <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 1, ease: 'easeOut' }}
@@ -66,13 +66,14 @@ export const Shop = () => {
                     >
                         {activeCategory === 'All' ? 'Collection' : activeCategory}
                     </motion.h1>
-                    <motion.p 
+                    <motion.p
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 1, delay: 0.2 }}
                         className="text-gray-500 text-sm md:text-base font-light max-w-2xl mx-auto leading-relaxed"
                     >
                         Explore the latest from Badare. Functional design meets absolute aesthetic restraint.
+                        <span className="block mt-6 text-black font-semibold uppercase tracking-[0.2em] text-xs">We don’t follow trends. We interrupt them.</span>
                     </motion.p>
                 </header>
 
@@ -91,11 +92,10 @@ export const Shop = () => {
                                 <button
                                     key={cat}
                                     onClick={() => setActiveCategory(cat)}
-                                    className={`text-[10px] tracking-[0.2em] uppercase font-semibold transition-all px-5 py-2.5 border ${
-                                        activeCategory === cat 
-                                        ? 'bg-gray-900 text-white border-gray-900 shadow-xl shadow-black/10' 
-                                        : 'bg-white text-gray-500 border-gray-200 hover:border-gray-900 hover:text-gray-900'
-                                    }`}
+                                    className={`text-[10px] tracking-[0.2em] uppercase font-semibold transition-all px-5 py-2.5 border ${activeCategory === cat
+                                            ? 'bg-gray-900 text-white border-gray-900 shadow-xl shadow-black/10'
+                                            : 'bg-white text-gray-500 border-gray-200 hover:border-gray-900 hover:text-gray-900'
+                                        }`}
                                 >
                                     {cat}
                                 </button>
@@ -124,7 +124,7 @@ export const Shop = () => {
                     </div>
                 ) : (
                     <>
-                        <motion.div 
+                        <motion.div
                             variants={staggerContainer}
                             initial="hidden"
                             animate="show"
@@ -138,7 +138,7 @@ export const Shop = () => {
                         </motion.div>
 
                         {filteredProducts.length === 0 && (
-                            <motion.div 
+                            <motion.div
                                 initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                                 className="text-center py-32 max-w-lg mx-auto"
                             >
@@ -159,7 +159,7 @@ export const Shop = () => {
 
                 {filteredProducts.length > visibleCount && (
                     <div className="flex justify-center mt-24 mb-12">
-                        <button 
+                        <button
                             onClick={() => setVisibleCount(prev => prev + 12)}
                             className="bg-transparent border border-gray-300 text-gray-900 font-semibold uppercase tracking-[0.2em] px-12 py-4 text-xs hover:border-gray-900 hover:bg-gray-50 transition-all shadow-sm"
                         >

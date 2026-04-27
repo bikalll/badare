@@ -13,6 +13,10 @@ export interface CartItem {
         color: string;
         type?: string;
     };
+    customDesign?: {
+        image?: string;
+        text?: string;
+    };
 }
 
 interface CartState {
@@ -49,7 +53,8 @@ export const useCartStore = create<CartState>()(
                         (i) => i.productId === item.productId &&
                             i.variant.size === item.variant.size &&
                             i.variant.color === item.variant.color &&
-                            i.variant.type === item.variant.type
+                            i.variant.type === item.variant.type &&
+                            JSON.stringify(i.customDesign || {}) === JSON.stringify(item.customDesign || {})
                     );
 
                     if (existingItemIndex > -1) {

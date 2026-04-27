@@ -23,6 +23,7 @@ import { AdminHero } from './pages/admin/AdminHero';
 import { AdminTrending } from './pages/admin/AdminTrending';
 import { Layout } from './components/Layout';
 import { Preloader } from './components/Preloader';
+import { CustomBuilder } from './pages/CustomBuilder';
 
 const FrontendLayout = () => (
     <Layout>
@@ -53,6 +54,7 @@ function App() {
                     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                     <Route path="/terms" element={<Terms />} />
                     <Route path="/track" element={<OrderTracking />} />
+                    <Route path="/custom" element={<CustomBuilder />} />
                     <Route path="/order-confirmation/:orderNumber" element={<OrderConfirmation />} />
                 </Route>
                 <Route path="/admin" element={<AdminLayout />}>

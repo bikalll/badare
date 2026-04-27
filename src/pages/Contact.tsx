@@ -2,14 +2,29 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Phone, Mail, Send } from 'lucide-react';
 import { supabase } from '../utils/supabaseClient';
+import { useProductStore } from '../store/useProductStore';
 
 export const Contact = () => {
     const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
     const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+    const { products, fetchProducts } = useProductStore();
 
     useEffect(() => {
         window.scrollTo(0, 0);
-    }, []);
+        if (products.length === 0) fetchProducts();
+    }, [fetchProducts, products.length]);
+
+    const getProductImage = () => {
+        if (!products || products.length === 0) return '';
+        const p = products[products.length - 1]; // Use a recent product
+        if (p.images && p.images.length > 0) return p.images[0];
+        if (p.variants?.colors) {
+            const firstColorWithImage = p.variants.colors.find((c: any) => typeof c === 'object' && c.images && c.images.length > 0);
+            if (firstColorWithImage) return (firstColorWithImage as any).images[0];
+        }
+        return '';
+    };
+    const imageUrl = getProductImage();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -40,9 +55,17 @@ export const Contact = () => {
 
                 {/* Info Column */}
                 <div className="flex flex-col justify-start">
-                    <h1 className="font-display text-4xl md:text-6xl uppercase tracking-widest mb-12 font-light">
+                    <h1 className="font-display text-4xl md:text-6xl uppercase tracking-widest mb-4 font-light">
                         Connect
                     </h1>
+                    <p className="text-[10px] md:text-xs uppercase tracking-[0.2em] font-semibold text-gray-400 mb-12">
+                        If your personality had an outfit, this would be it.
+                    </p>
+                    {imageUrl && (
+                        <div className="w-full aspect-[16/9] overflow-hidden mb-12">
+                            <img src={imageUrl} alt="Badare Editorial" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 ease-out" />
+                        </div>
+                    )}
                     <div className="space-y-12">
                         <div>
                             <h2 className="text-xs font-medium uppercase tracking-widest text-gray-400 mb-2 flex items-center gap-2 border-b border-gray-100 pb-2">

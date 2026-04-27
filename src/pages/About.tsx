@@ -1,11 +1,30 @@
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { useProductStore } from '../store/useProductStore';
 
 export const About = () => {
+    const { products, fetchProducts } = useProductStore();
+
     useEffect(() => {
         window.scrollTo(0, 0);
-    }, []);
+        if (products.length === 0) fetchProducts();
+    }, [fetchProducts, products.length]);
+
+    const getProductImage = (index: number) => {
+        if (!products || products.length <= index) return '';
+        const p = products[index];
+        if (p.images && p.images.length > 0) return p.images[0];
+        if (p.variants?.colors) {
+            const firstColorWithImage = p.variants.colors.find((c: any) => typeof c === 'object' && c.images && c.images.length > 0);
+            if (firstColorWithImage) return (firstColorWithImage as any).images[0];
+        }
+        return '';
+    };
+
+
+    const image2 = getProductImage(1) || "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=1500";
+    const image3 = getProductImage(2) || "https://images.unsplash.com/photo-1550614000-4b95d466f272?auto=format&fit=crop&q=80&w=1500";
 
     return (
         <motion.div
@@ -16,13 +35,7 @@ export const About = () => {
         >
             {/* Hero Image Section */}
             <section className="relative min-h-[75vh] flex items-center justify-center px-6 overflow-hidden">
-                <div className="absolute inset-0 z-0">
-                    <img 
-                        src="https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?auto=format&fit=crop&q=80&w=2500" 
-                        alt="Editorial Manifesto" 
-                        className="w-full h-full object-cover grayscale opacity-20 object-top"
-                    />
-                </div>
+
                 <div className="relative z-10 w-full max-w-7xl pt-16 text-center md:text-left">
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
@@ -37,6 +50,16 @@ export const About = () => {
                 </div>
             </section>
 
+            <section className="py-24 px-6 max-w-4xl mx-auto text-center border-b border-gray-100">
+                <h2 className="font-display text-3xl md:text-5xl tracking-tight leading-snug text-black mb-10">
+                    We believe being “too much” is a compliment.
+                </h2>
+                <div className="flex flex-col gap-3 uppercase tracking-[0.2em] text-xs font-semibold text-gray-500">
+                    <span>Too loud. Too honest. Too real.</span>
+                    <span className="text-black bg-black/5 py-4 px-8 self-center mt-2 rounded-full">Good. Stay that way.</span>
+                </div>
+            </section>
+
             {/* Core Ethos - Two Column */}
             <section className="relative z-10 py-32 px-6 max-w-7xl mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24">
@@ -44,9 +67,9 @@ export const About = () => {
                         <h2 className="font-display text-3xl md:text-5xl uppercase tracking-tight mb-8 text-black leading-none">
                             We don't do<br /><span className="italic text-gray-500 font-light">seasons.</span>
                         </h2>
-                        <img 
-                            src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=1500" 
-                            alt="Studio" 
+                        <img
+                            src={image2}
+                            alt="Studio"
                             className="w-full aspect-[3/4] object-cover grayscale hover:grayscale-0 transition-all duration-1000 mt-6"
                         />
                     </div>
@@ -62,9 +85,9 @@ export const About = () => {
                                 "The streets don't ask for permission. Neither should your wardrobe."
                             </p>
                         </div>
-                        <img 
-                            src="https://images.unsplash.com/photo-1550614000-4b95d466f272?auto=format&fit=crop&q=80&w=1500" 
-                            alt="Archive" 
+                        <img
+                            src={image3}
+                            alt="Archive"
                             className="w-full aspect-square object-cover grayscale mix-blend-multiply"
                         />
                     </div>
@@ -74,8 +97,8 @@ export const About = () => {
             {/* Statement Ticker */}
             <section className="relative z-10 py-32 bg-black text-white overflow-hidden border-y border-gray-900 mt-12 mb-24">
                 <div className="whitespace-nowrap flex gap-16 overflow-hidden max-w-full">
-                    <motion.div 
-                        animate={{ x: ["0%", "-50%"] }} 
+                    <motion.div
+                        animate={{ x: ["0%", "-50%"] }}
                         transition={{ repeat: Infinity, ease: "linear", duration: 15 }}
                         className="flex gap-16 items-center"
                     >

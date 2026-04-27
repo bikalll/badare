@@ -10,26 +10,8 @@ export const Home = () => {
     const { scrollY } = useScroll();
 
     const [sliderIndex, setSliderIndex] = useState(0);
-    const [heroSlides, setHeroSlides] = useState([
-        {
-            title: "BE",
-            italic: "YOU.",
-            desc: "Unapologetic expression. Break the mold and wear your authenticity loudly.",
-            img: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=100&w=1500"
-        },
-        {
-            title: "STAY",
-            italic: "WEIRD.",
-            desc: "Ordinary is boring. Embrace the chaos and let your style speak volumes.",
-            img: "https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?auto=format&fit=crop&q=100&w=1500"
-        },
-        {
-            title: "OWN",
-            italic: "IT.",
-            desc: "No rules. No boundaries. Make the streets your personal runway.",
-            img: "https://images.unsplash.com/photo-1529139574466-a303027c028b?auto=format&fit=crop&q=100&w=1500"
-        }
-    ]);
+    const [heroSlides, setHeroSlides] = useState<any[]>([]);
+    const [isHeroLoading, setIsHeroLoading] = useState(true);
 
     // Database connected hero functionality
 
@@ -49,10 +31,12 @@ export const Home = () => {
                     img: d.image_url
                 })));
             }
+            setIsHeroLoading(false);
         };
         fetchData();
     }, []);
     useEffect(() => {
+        if (heroSlides.length === 0) return;
         const interval = setInterval(() => {
             setSliderIndex((prev) => (prev + 1) % heroSlides.length);
         }, 5000);
@@ -61,59 +45,7 @@ export const Home = () => {
 
     useEffect(() => {
         window.scrollTo(0, 0);
-
-        // ONE-OFF SCRIPT TO UPGRADE IMAGES TO LUXURY UNSPLASH IMAGES
-        const upgradeImages = async () => {
-            const hasRun = localStorage.getItem('upgraded_images_v1');
-            if (hasRun || !products || products.length === 0) return;
-
-            console.log("Upgrading product database to Unsplash luxury images...");
-            localStorage.setItem('upgraded_images_v1', 'true');
-
-            const imagePool: Record<string, string[]> = {
-                'Apparel': [
-                    'https://images.unsplash.com/photo-1434389678369-182cb207c427?auto=format&fit=crop&q=80&w=2000',
-                    'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=2000',
-                    'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=2000',
-                    'https://images.unsplash.com/photo-1550614000-4b95d466f272?auto=format&fit=crop&q=80&w=2000',
-                    'https://images.unsplash.com/photo-1574180564177-3e110ef90a1e?auto=format&fit=crop&q=80&w=2000'
-                ],
-                'Outerwear': [
-                    'https://images.unsplash.com/photo-1539533113208-f6df8cc8b543?auto=format&fit=crop&q=80&w=2000',
-                    'https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&q=80&w=2000'
-                ],
-                'Accessories': [
-                    'https://images.unsplash.com/photo-1523206489230-c012c64b2b48?auto=format&fit=crop&q=80&w=2000',
-                    'https://images.unsplash.com/photo-1611078704689-f53e680e9803?auto=format&fit=crop&q=80&w=2000',
-                    'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?auto=format&fit=crop&q=80&w=2000'
-                ],
-                'Footwear': [
-                    'https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&q=80&w=2000',
-                    'https://images.unsplash.com/photo-1620809228913-c971eb0ebd0e?auto=format&fit=crop&q=80&w=2000'
-                ]
-            };
-
-            for (let p of products) {
-                const categoryPool = imagePool[p.category] || imagePool['Apparel'];
-
-                let charCodeSum = 0;
-                for (let j = 0; j < p.id.length; j++) charCodeSum += p.id.charCodeAt(j);
-
-                const img1 = categoryPool[charCodeSum % categoryPool.length];
-                const img2 = categoryPool[(charCodeSum + 1) % categoryPool.length];
-
-                const { error: updateError } = await supabase
-                    .from('products')
-                    .update({ images: [img1, img2] })
-                    .eq('id', p.id);
-
-                if (updateError) console.error("Error updating image for", p.name, updateError);
-            }
-            console.log("Images completely updated to Unsplash Luxury! Refresh the page to see them.");
-        };
-
-        upgradeImages();
-    }, [products]);
+    }, []);
 
     const y1 = useTransform(scrollY, [0, 1000], [0, 300]);
 
@@ -168,76 +100,109 @@ export const Home = () => {
                             <span className="block text-[10px] md:text-xs text-black/40 tracking-[0.4em] uppercase font-semibold">The New Standard</span>
                         </motion.div>
 
-                        <AnimatePresence mode="wait">
-                            <motion.h1
-                                key={`title-${sliderIndex}`}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -20 }}
-                                transition={{ duration: 0.6, ease: "easeOut" }}
-                                className="font-display text-6xl md:text-7xl lg:text-[7.5rem] leading-[0.9] tracking-tighter text-black flex flex-wrap gap-x-2 md:gap-x-4 mb-12"
-                            >
-                                <span className="inline-block">{heroSlides[sliderIndex].title}</span>
-                                <span className="w-full h-0 block"></span>
-                                <span className="inline-block italic pr-1 md:pr-2 font-light text-gray-800">{heroSlides[sliderIndex].italic}</span>
-                            </motion.h1>
-                        </AnimatePresence>
+                        {isHeroLoading ? (
+                            <div className="animate-pulse space-y-6">
+                                <div className="h-24 md:h-32 bg-gray-200 rounded w-full max-w-lg mb-12"></div>
+                                <div className="flex flex-col gap-4">
+                                    <div className="h-4 bg-gray-200 rounded w-full max-w-[320px]"></div>
+                                    <div className="h-4 bg-gray-200 rounded w-4/5 max-w-[280px]"></div>
+                                    <div className="h-4 bg-gray-200 rounded w-24 mt-4"></div>
+                                </div>
+                            </div>
+                        ) : heroSlides.length > 0 ? (
+                            <>
+                                <AnimatePresence mode="wait">
+                                    <motion.h1
+                                        key={`title-${sliderIndex}`}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -20 }}
+                                        transition={{ duration: 0.6, ease: "easeOut" }}
+                                        className="font-display text-6xl md:text-7xl lg:text-[7.5rem] leading-[0.9] tracking-tighter text-black flex flex-wrap gap-x-2 md:gap-x-4 mb-12"
+                                    >
+                                        <span className="inline-block">{heroSlides[sliderIndex].title}</span>
+                                        <span className="w-full h-0 block"></span>
+                                        <span className="inline-block italic pr-1 md:pr-2 font-light text-gray-800">{heroSlides[sliderIndex].italic}</span>
+                                    </motion.h1>
+                                </AnimatePresence>
 
-                        <AnimatePresence mode="wait">
-                            <motion.div
-                                key={`desc-${sliderIndex}`}
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
-                                transition={{ duration: 0.6, ease: "easeOut" }}
-                                className="flex flex-col gap-8"
-                            >
-                                <p className="max-w-[320px] text-xs md:text-sm font-light text-gray-500 tracking-[0.05em] leading-relaxed min-h-[80px]">
-                                    {heroSlides[sliderIndex].desc}
-                                </p>
-                                <Link to="/shop" className="group relative inline-flex items-center gap-6 text-black font-medium text-[10px] md:text-xs uppercase tracking-[0.3em] transition-all hover:text-black/60 w-fit">
-                                    <span className="relative z-10 border-b border-transparent group-hover:border-black/30 pb-1 transition-colors">Shop Collection</span>
-                                    <span className="w-12 h-px bg-black/20 group-hover:w-20 group-hover:bg-black transition-all duration-500 ease-out"></span>
-                                </Link>
-                            </motion.div>
-                        </AnimatePresence>
+                                <AnimatePresence mode="wait">
+                                    <motion.div
+                                        key={`desc-${sliderIndex}`}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.6, ease: "easeOut" }}
+                                        className="flex flex-col gap-8"
+                                    >
+                                        <p className="max-w-[320px] text-xs md:text-sm font-light text-gray-500 tracking-[0.05em] leading-relaxed min-h-[80px]">
+                                            {heroSlides[sliderIndex].desc}
+                                        </p>
+                                        <Link to="/shop" className="group relative inline-flex items-center gap-6 text-black font-medium text-[10px] md:text-xs uppercase tracking-[0.3em] transition-all hover:text-black/60 w-fit">
+                                            <span className="relative z-10 border-b border-transparent group-hover:border-black/30 pb-1 transition-colors">Shop Collection</span>
+                                            <span className="w-12 h-px bg-black/20 group-hover:w-20 group-hover:bg-black transition-all duration-500 ease-out"></span>
+                                        </Link>
+                                    </motion.div>
+                                </AnimatePresence>
+                            </>
+                        ) : null}
                     </div>
                 </div>
 
                 {/* Right Image Pane - Slider */}
                 <div className="w-full lg:w-[45%] h-[60vh] lg:h-screen relative overflow-hidden bg-gray-100 group">
-                    <motion.div style={{ y: y1 }} className="absolute inset-0 w-full h-[120%] -top-10">
-                        <AnimatePresence mode="popLayout">
-                            <motion.img
-                                key={`img-${sliderIndex}`}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 1.5, ease: "easeInOut" }}
-                                src={heroSlides[sliderIndex].img}
-                                alt="Collection showcase"
-                                className="absolute inset-0 w-full h-full object-cover opacity-90 object-[center_top]"
-                            />
-                        </AnimatePresence>
-                    </motion.div>
+                    {isHeroLoading ? (
+                        <div className="absolute inset-0 w-full h-full bg-gray-200 animate-pulse"></div>
+                    ) : heroSlides.length > 0 ? (
+                        <>
+                            <motion.div style={{ y: y1 }} className="absolute inset-0 w-full h-[120%] -top-10">
+                                <AnimatePresence mode="popLayout">
+                                    <motion.img
+                                        key={`img-${sliderIndex}`}
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        transition={{ duration: 1.5, ease: "easeInOut" }}
+                                        src={heroSlides[sliderIndex].img}
+                                        alt="Collection showcase"
+                                        className="absolute inset-0 w-full h-full object-cover opacity-90 object-[center_top]"
+                                    />
+                                </AnimatePresence>
+                            </motion.div>
 
-                    {/* Slider Indicator Controls */}
-                    <div className="absolute bottom-8 right-8 md:bottom-12 md:right-12 z-20 flex gap-4 items-center">
-                        <span className="text-[9px] uppercase tracking-[0.3em] font-medium text-black/60 bg-white/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/50">
-                            0{sliderIndex + 1} / 0{heroSlides.length}
-                        </span>
-                        <div className="flex gap-2">
-                            {heroSlides.map((_, idx) => (
-                                <button
-                                    key={`btn-${idx}`}
-                                    onClick={() => setSliderIndex(idx)}
-                                    className={`w-8 h-px transition-all duration-300 ${idx === sliderIndex ? 'bg-black' : 'bg-black/20 hover:bg-black/40'}`}
-                                    aria-label={`Go to slide ${idx + 1}`}
-                                />
-                            ))}
+                            {/* Slider Indicator Controls */}
+                            <div className="absolute bottom-8 right-8 md:bottom-12 md:right-12 z-20 flex gap-4 items-center">
+                                <span className="text-[9px] uppercase tracking-[0.3em] font-medium text-black/60 bg-white/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/50">
+                                    0{sliderIndex + 1} / 0{heroSlides.length}
+                                </span>
+                                <div className="flex gap-2">
+                                    {heroSlides.map((_, idx) => (
+                                        <button
+                                            key={`btn-${idx}`}
+                                            onClick={() => setSliderIndex(idx)}
+                                            className={`w-8 h-px transition-all duration-300 ${idx === sliderIndex ? 'bg-black' : 'bg-black/20 hover:bg-black/40'}`}
+                                            aria-label={`Go to slide ${idx + 1}`}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="absolute inset-0 flex items-center justify-center flex-col">
+                            <span className="text-gray-400 text-xs font-medium uppercase tracking-widest">No highlight imagery available</span>
                         </div>
-                    </div>
+                    )}
                 </div>
+            </section>
+
+            {/* Manifesto Strip 1 */}
+            <section className="py-24 px-6 text-center max-w-4xl mx-auto">
+                <h2 className="font-display text-3xl md:text-5xl lg:text-6xl tracking-tight leading-tight text-black">
+                    Badare is not fashion.
+                </h2>
+                <p className="mt-8 text-sm md:text-base font-medium text-gray-500 uppercase tracking-[0.2em] max-w-2xl mx-auto leading-relaxed">
+                    It’s a statement you wear when you’re done explaining yourself.
+                </p>
             </section>
 
             {/* New Arrivals - Staggered Grid */}
@@ -299,10 +264,10 @@ export const Home = () => {
                 >
                     <div className="bg-white/80 backdrop-blur-3xl p-10 md:p-16 border border-white/40 shadow-[0_8px_40px_rgba(0,0,0,0.04)]">
                         <h2 className="font-display text-4xl md:text-5xl tracking-tight leading-tight text-black mb-6">
-                            Design Like You Give A Damn
+                            Dress Like You Give A Damn
                         </h2>
                         <p className="text-gray-600 font-light text-sm md:text-base leading-relaxed mb-10">
-                            We believe aesthetics and utility are not mutually exclusive. Our pieces are designed to perform quietly in the background of your fast-paced life.
+                            Wearing Badare isn’t just putting on a T-shirt—it’s choosing bold self-expression, unapologetic style, and statement fashion that actually says something. It means you dress like you give a damn about who you are, what you stand for, and how loudly you want the world to hear it.
                         </p>
                         <Link to="/about" className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black border-b border-black pb-1 hover:text-gray-500 hover:border-gray-500 transition-colors">
                             Discover Our Story
@@ -351,7 +316,7 @@ export const Home = () => {
                                 key={product.id}
                                 className="group relative w-full h-[500px] lg:h-[600px] overflow-hidden bg-gray-100 flex flex-col justify-end p-8"
                             >
-                                <img src={product.images[0] || ''} alt={product.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 ease-out" />
+                                <img src={(product.images && product.images.length > 0) ? product.images[0] : ((product.variants?.colors?.find((c: any) => typeof c === 'object' && (c as any).images && (c as any).images.length > 0) as any)?.images?.[0] || '')} alt={product.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 ease-out" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-500"></div>
                                 <div className="relative z-10 text-white">
                                     <span className="text-[10px] uppercase font-bold tracking-[0.3em] opacity-80 mb-2 block">{product.category}</span>
@@ -364,6 +329,52 @@ export const Home = () => {
                         ))}
                     </motion.div>
                 )}
+            </section>
+
+            {/* Manifesto Strip 2 */}
+            <section className="py-24 px-6 text-center max-w-4xl mx-auto">
+                <h2 className="font-display text-3xl md:text-5xl lg:text-6xl tracking-tight leading-tight text-black">
+                    We don’t dress to impress.
+                </h2>
+                <p className="mt-8 text-base md:text-lg font-light text-gray-500 max-w-2xl mx-auto leading-relaxed">
+                    We dress to express—the chaos, the confidence, the contradictions.
+                </p>
+            </section>
+
+            {/* Customization Feature Block */}
+            <section className="py-24 px-6 max-w-[80rem] mx-auto border-t border-gray-100">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-16 lg:gap-24 items-center">
+                    <div className="flex flex-col">
+                        <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-gray-400 mb-6 block">The Badare Experience</span>
+                        <h2 className="font-display text-4xl md:text-5xl lg:text-5xl tracking-tight leading-tight text-black mb-8">
+                            Choose your Badare. <br /> Make it yours.
+                        </h2>
+                        <p className="text-gray-500 font-light text-base md:text-lg leading-relaxed mb-8">
+                            We don't just sell clothes; we give you a canvas. Choose your design, select your product, pick your color, and find your perfect size. Everything is fully customizable according to your choice.
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-6 mb-10">
+                            <Link to="/custom" className="bg-black text-white font-medium text-[10px] md:text-xs uppercase px-12 py-5 tracking-[0.25em] hover:bg-gray-800 transition-colors">
+                                Start Customizing
+                            </Link>
+                        </div>
+                        <div className="flex flex-wrap gap-4">
+                            <span className="text-[10px] uppercase font-semibold tracking-[0.2em] border border-gray-200 px-6 py-3 text-black">Design</span>
+                            <span className="text-[10px] uppercase font-semibold tracking-[0.2em] border border-gray-200 px-6 py-3 text-black">Product</span>
+                            <span className="text-[10px] uppercase font-semibold tracking-[0.2em] border border-gray-200 px-6 py-3 text-black">Color</span>
+                            <span className="text-[10px] uppercase font-semibold tracking-[0.2em] border border-gray-200 px-6 py-3 text-black">Size</span>
+                        </div>
+                    </div>
+                    <div className="relative aspect-square md:aspect-[4/5] bg-gray-100 overflow-hidden group">
+                        <img
+                            src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&q=80&w=2000"
+                            alt="Customizable Apparel"
+                            className="w-full h-full object-cover grayscale opacity-80 mix-blend-multiply group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000"
+                        />
+                        <div className="absolute inset-x-8 bottom-8 bg-white/90 backdrop-blur-md p-6 text-center">
+                            <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-black group-hover:text-gray-500 transition-colors">100% Modifiable</span>
+                        </div>
+                    </div>
+                </div>
             </section>
 
             {/* Newsletter VIP */}
